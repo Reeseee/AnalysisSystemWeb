@@ -1,0 +1,71 @@
+@import "./normalize.css";
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+html,body{height:100%}
+em, i {
+	font-style: normal
+}
+
+li {
+	list-style: none
+}
+
+img {
+	border: 0;
+	vertical-align: middle
+}
+
+button {
+	cursor: pointer
+}
+
+a {
+	color: #ffffff;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #FFFFFF;
+}
+
+button, input {
+	font-family: Microsoft JhengHei, Heiti SC, tahoma, arial, Hiragino Sans GB, "\5B8B\4F53", sans-serif
+}
+
+/* 消除锯齿 */
+
+
+.hide, .none {
+	display: none
+}
+
+/* 清除浮动 */
+
+.clearfix:after {
+	visibility: hidden;
+	clear: both;
+	display: block;
+	content: ".";
+	height: 0
+}
+
+.clearfix {
+	*zoom: 1
+}
+
+body {
+	/* background-image: url("../img/register_backGround.jpg"); */
+	/* text-align: center; */
+	-webkit-font-smoothing: antialiased;
+	background-color: #fff;
+	color:#333;
+	font: 16px/1.5 Microsoft JhengHei;
+	 /* ,Heiti SC, tahoma, arial, Hiragino Sans GB, "\5B8B\4F53", sans-serif; */
+	
+}
+.el-table th.gutter{
+	display: table-cell!important;
+	}
