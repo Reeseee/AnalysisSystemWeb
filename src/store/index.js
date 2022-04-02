@@ -7,12 +7,14 @@ Vue.use(Vuex);
 const store=new Vuex.Store({
     state:{
         //个人信息
-        id:1||sessionStorage.getItem('id'),
-        isLogin:true||sessionStorage.getItem('isLogin'),
-        username:"test"||sessionStorage.getItem('usernanme'),
+        id:''||sessionStorage.getItem('id'),
+        isLogin:false||sessionStorage.getItem('isLogin'),
+        username:""||sessionStorage.getItem('username'),
         email:"test@qq.com"||sessionStorage.getItem('email'),
         accessToken: sessionStorage.getItem('accessToken') ? sessionStorage.getItem('accessToken') : '',//token
-        // role:''||sessionStorage.getItem('role'),
+
+        //正在分析的项目
+        project:sessionStorage.getItem('project')? JSON.parse(sessionStorage.getItem('project')):{},
         
     },
     mutations:{//同步操作
@@ -30,14 +32,23 @@ const store=new Vuex.Store({
             state.isLogin=false;
             state.id='';
             state.accessToken='';
-            state.role='';
-            state.avatar={};
+            state.username='';
+            state.project={};
+          
 
         },
         SET_TOKEN:(state,auth)=>{
             state.accessToken=auth;
             sessionStorage.setItem('accessToken',auth)
         },
+        SET_USERNAME:(state,username)=>{
+            state.username=username;
+            sessionStorage.setItem('username',username)
+        },
+        SET_PROJECT(state, proinfo) {
+            sessionStorage.setItem('project',JSON.stringify(proinfo));
+            state.project = proinfo;
+          },
     },
     actions:{//异步操作
 
@@ -48,6 +59,7 @@ const store=new Vuex.Store({
         username:state=>state.username,
         email:state=>state.email,
         accessToken:state=>state.accessToken,
+        project:state=>state.project,
     },
     modules:{
         

@@ -8,9 +8,9 @@
       <el-button type="primary" @click="dialogVisible2 = true" size="medium"
         ><i class="el-icon-upload2"> 上传项目</i>
       </el-button>
-      <el-button type="danger" @click="deleteBatch()" size="medium"
+      <!-- <el-button type="danger" @click="deleteBatch()" size="medium"
         ><i class="el-icon-delete"> 批量删除</i>
-      </el-button>
+      </el-button> -->
 
       <!-- 项目表 -->
       <el-table
@@ -18,18 +18,23 @@
         :data="tableData"
         tooltip-effect="dark"
         style="width: 100%"
-        @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55"> </el-table-column>
+        <!-- <el-table-column type="selection" width="55"> </el-table-column> -->
         <el-table-column type="index" width="50"> </el-table-column>
-        <el-table-column prop="projectName" label="项目名称" sortable>
+          <!-- <el-table-column width="50" prop="id"> </el-table-column> -->
+        <el-table-column prop="projectname" label="项目名称" sortable>
         </el-table-column>
-        <el-table-column prop="uploadDate" label="上传日期" sortable>
+        <el-table-column
+          prop="uploaddate"
+          label="上传日期"
+          sortable
+          :formatter="dateformatter"
+        >
         </el-table-column>
 
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button
+            <!-- <el-button
               size="mini"
               @click="handleDownload(scope.$index, scope.row)"
               ><i class="el-icon-download"></i
@@ -39,13 +44,28 @@
               type="danger"
               @click="handleDelete(scope.$index, scope.row)"
               ><i class="el-icon-delete"></i
-            ></el-button>
-            <el-button size="mini" type="primary" @click="dialogVisible1 = true"
+            ></el-button> -->
+
+            <el-button
+              @click="handleClick(scope.row)"
+              type="primary"
+              size="small"
               >进入分析</el-button
             >
           </template>
         </el-table-column>
       </el-table>
+      <div style="text-align:center;margin-top:20px">
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :page-size="8"
+          :page-count="totalPage"
+          @current-change="getProject"
+          :current-page.sync="currentPage"
+        >
+        </el-pagination>
+      </div>
     </div>
     <!-- 进入分析前的选择与提示 -->
     <el-dialog title="提示" :visible.sync="dialogVisible1" width="30%" center>
@@ -62,46 +82,36 @@
     <!-- 上传文件模块 -->
     <el-dialog title="上传项目" width="40%" :visible.sync="dialogVisible2">
       <el-form
-        :model="ruleForm"
+        :model="projectForm"
         :rules="rules"
-        ref="ruleForm"
+        ref="projectForm"
         class="demo-logList"
       >
-        <el-form-item label="项目名称" prop="logName">
-          <el-input v-model="ruleForm.logName" class="textInput"></el-input>
+        <el-form-item label="项目名称" prop="name">
+          <el-input v-model="projectForm.name" class="textInput"></el-input>
         </el-form-item>
 
-        <el-form-item prop="file" class="uploadFile">
-          <el-upload
-            ref="upload"
-            class="upload-demo"
-            drag
-            action="#"
-            :limit="1"
-            :show-file-list="true"
-            :with-credentials="true"
-            :on-change="changeFile"
-            :on-remove="handleRemove"
-            accept=".txt, .xes"
-            :auto-upload="false"
-          >
-            <!-- :on-progress="onUpload"     :before-upload="beforeAvatarUpload"  :on-success="upFile"-->
-            <!--是否支持多选文件  multiple  -->
-            <i class="el-icon-upload"></i>
-            <div class="el-upload__text">
-              将文件拖到此处，或<em>点击上传</em>
-            </div>
-            <div class="el-upload__tip" slot="tip">
-              提示：上传文件夹？
-            </div>
-          </el-upload>
+        <el-form-item prop="file" class="uploadfile">
+          <div class="inputfile" id="newbutton">
+            <el-button type="primary" size="mini" @click="choosefile"
+              >选择文件夹</el-button
+            >
+            <span v-if="files.length != 0">已选择{{ files.length }}个文件</span>
+            <input
+              @change="getFiles($event)"
+              name="files"
+              type="file"
+              webkitdirectory
+              mozdirectory
+              class="fileinput"
+              id="oldbutton"
+            />
+          </div>
         </el-form-item>
         <el-form-item style="text-align:center">
-          <el-button size="mini" @click="closeTheDialog()">取消</el-button>
-          <el-button size="mini" @click="resetForm('ruleForm')">重置</el-button>
-          <el-button type="primary" size="mini" @click="uploadLog('ruleForm')"
-            >确定</el-button
-          >
+          <el-button size="mini" @click="closedialog">取消</el-button>
+          <el-button size="mini" @click="resetForm">重置</el-button>
+          <el-button type="primary" size="mini" @click="upload">上传</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -109,93 +119,148 @@
 </template>
 
 <script>
+import axios from "axios";
+import {
+  getProjectCount,
+  getProjectList,
+  uploadProject
+} from "@/network/project.js";
 export default {
   name: "Project", //组件的名称
   data() {
-    //组件中所用的数据
     return {
-      tableData: [
-        {
-          uploadDate: "2016-05-03",
-          projectName: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          uploadDate: "2016-05-02",
-          projectName: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          uploadDate: "2016-05-04",
-          projectName: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          uploadDate: "2016-05-01",
-          projectName: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          uploadDate: "2016-05-08",
-          projectName: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          uploadDate: "2016-05-06",
-          projectName: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          uploadDate: "2016-05-07",
-          projectName: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        }
-      ],
+      tableData: [], //项目数据
       multipleSelection: [],
       dialogVisible1: false,
       dialogVisible2: false,
-      ruleForm: {},
-      rules: {}
+      projectForm: {
+        name: ""
+      },
+      rules: {
+        name: [
+          { required: true, message: "请输入项目名称", trigger: "blur" },
+          { min: 3, max: 15, message: "长度在 3 到 15 个字符", trigger: "blur" }
+        ]
+      },
+      totalPage: 0,
+      files: [], //上传的文件夹
+      currentPage: 1
     };
   },
+  mounted() {
+    this.getTotalPage();
+    this.getProject();
+  },
   methods: {
-    //组件中所使用或触发的方法，如向后端请求数据
-    toggleSelection(rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row);
+    //获取页数
+    getTotalPage() {
+      getProjectCount(this.$store.getters.id)
+        .then(res => {
+          //console.log(res);
+          this.totalPage = res;
+        })
+        .catch(err => {
+          this.$message.error("获取页数失败");
         });
-      } else {
-        this.$refs.multipleTable.clearSelection();
+    },
+    //获取项目
+    getProject() {
+      getProjectList(this.$store.getters.id, this.currentPage)
+        .then(res => {
+          this.tableData = res;
+        })
+        .catch(err => {
+          this.$message.error("获取项目列表失败");
+        });
+    },
+    //选择文件
+    getFiles(event) {
+      var files = event.target.files;
+      for (var i = 0; i < files.length; i++) {
+        this.files.push(files[i]);
+        //console.log(this.files[i]);
       }
     },
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
+    //上传项目
+    upload() {
+      if (this.files.length == 0) {
+        this.$message.error("请选择项目文件");
+        return;
+      }
+      this.$refs["projectForm"].validate(valid => {
+        if (valid) {
+          var formData = new FormData();
+          for (var i = 0; i < this.files.length; i++) {
+            formData.append("files", this.files[i]);
+            //console.log(this.files[i]);
+          }
+          formData.append("id", this.$store.getters.id);
+          formData.append("userDefineName", this.projectForm.name);
+          uploadProject(formData)
+            .then(res => {
+              this.$message.success("上传项目成功");
+              //console.log(res);
+              this.getTotalPage();
+              this.getProject();
+              this.dialogVisible2 = false;
+              this.resetForm();
+            })
+            .catch(err => {
+              this.$message.error("上传项目失败");
+              console.log(err);
+            });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
-    uploadProject() {
-      console.log("上传项目");
+    //日期格式formmater
+    dateformatter(row, column) {
+      return row.uploaddate.substr(0, 10);
     },
-    deleteBatch() {
-      console.log("批量删除");
+    //选择文件
+    choosefile() {
+      document.getElementById("oldbutton").click();
     },
-    handleDownload(index, row) {
-      console.log(index, row);
+    //重置上传文件表单
+    resetForm() {
+      this.files = [];
+      this.projectForm.name = "";
     },
-    handleDelete(index, row) {
-      console.log(index, row);
+    //关闭上传文件dialog
+    closedialog() {
+      this.resetForm();
+      this.dialogVisible2 = false;
     },
+    //点击进入分析按钮
+    handleClick(row) {
+      this.dialogVisible1 = true;
+      this.$store.commit("SET_PROJECT", row); //将选择的项目信息存入vuex中保存，以便之后访问
+      //console.log(row);
+    },
+    // deleteBatch() {
+    //   console.log("批量删除");
+    // },
+    // handleDownload(index, row) {
+    //   console.log(index, row);
+    // },
+    // handleDelete(index, row) {
+    //   console.log(index, row);
+    // },
     //进入结构分模块
     toStructureAnalysis() {
       this.dialogVisible1 = false;
-      this.$router.push("/analysis");
+      console.log(this.$store.getters.project.id);
+      this.$router.push({ name: "ProjectAnalyze", params: { id: this.$store.getters.project.id } });
     },
     //进入逆向模块
     toReengineering() {
       this.dialogVisible1 = false;
       this.$router.push("/reengineering");
-    },
-    changeFile(file, fileList) {},
-    handleRemove(file, fileList) {}
+    }
+    // changeFile(file, fileList) {},
+    // handleRemove(file, fileList) {}
   }
 };
 </script>
@@ -206,25 +271,26 @@ export default {
 }
 .content {
   margin: 15px 0px;
+  /* text-align: center; */
 }
 /* .el-button--primary {
     color: #FFF;
     background-color: rgb(101, 165, 253);
     border-color: #409EFF;
 } */
-.upload-demo{
-    margin: 0 auto;
+.upload-demo {
+  margin: 0 auto;
 }
-
 </style>
 <style>
-.el-upload{
-    width: 100%;
+.el-upload {
+  width: 100%;
 }
 .el-upload-dragger {
-    
-    width: 100%;
-    height: 180px;
-   
+  width: 100%;
+  height: 180px;
+}
+#oldbutton {
+  display: none;
 }
 </style>

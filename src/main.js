@@ -17,6 +17,10 @@ import ElementUI from 'element-ui'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
+//图库数据
+import gojs from 'gojs'
+Vue.prototype.go = gojs
+
 import { message } from './lib/resetMessage';
 
 

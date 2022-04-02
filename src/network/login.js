@@ -1,11 +1,13 @@
 import { request } from './request';
 import qs from 'qs'
 export function login(loginForm) {
-    return request({
-        url: '/user/login',//登录接口
+    return request({ 
+        url: '/login',//登录接口
         method:'post',
-        headers:{ 'Content-Type':'application/json'},
-        data: loginForm, 
+        headers:{
+            'Content-Type':'application/x-www-form-urlencoded'
+        },
+        data: qs.stringify(loginForm), 
     })
 }
 

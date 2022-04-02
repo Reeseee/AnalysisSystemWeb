@@ -1,0 +1,122 @@
+{
+    "directed": true,
+    "file": "test1.java",
+    "nodes": [
+        {
+            "line": 4,
+            "key": 0,
+            "label": "vokey main(String[] args)"
+        },
+        {
+            "line": 5,
+            "key": 1,
+            "label": "int i = 0"
+        },
+        {
+            "line": 6,
+            "key": 2,
+            "label": "i++"
+        },
+        {
+            "line": 7,
+            "key": 3,
+            "label": "if (i > 0)"
+        },
+        {
+            "line": 8,
+            "key": 4,
+            "label": "System.out.println('Positive')"
+        },
+        {
+            "line": 9,
+            "key": 5,
+            "label": "i *= 2"
+        },
+        {
+            "line": 0,
+            "key": 6,
+            "label": "endif"
+        },
+        {
+            "line": 11,
+            "key": 7,
+            "label": "System.out.println('Non-positive')"
+        },
+        {
+            "line": 12,
+            "key": 8,
+            "label": "i *= -2"
+        },
+        {
+            "line": 14,
+            "key": 9,
+            "label": "System.out.println('End')"
+        }
+    ],
+    "package": "",
+    "edges": [
+        {
+         
+            "label": "EPSILON",
+            "source": 0,
+            "to": 1
+        },
+        {
+        
+            "label": "EPSILON",
+            "source": 1,
+            "to": 2
+        },
+        {
+          
+            "label": "EPSILON",
+            "source": 2,
+            "to": 3
+        },
+        {
+           
+            "label": "TRUE",
+            "source": 3,
+            "to": 4
+        },
+        {
+          
+            "label": "EPSILON",
+            "source": 4,
+            "to": 5
+        },
+        {
+          
+            "label": "EPSILON",
+            "source": 5,
+            "to": 6
+        },
+        {
+            
+            "label": "FALSE",
+            "source": 3,
+            "to": 7
+        },
+        {
+           
+            "label": "EPSILON",
+            "source": 7,
+            "to": 8
+        },
+        {
+         
+            "label": "EPSILON",
+            "source": 8,
+            "to": 6
+        },
+        {
+            
+            "label": "EPSILON",
+            "source": 6,
+            "to": 9
+        }
+    ],
+    "label": "CFG of test1.java",
+    "type": "Control Flow Graph (CFG)",
+    "multigraph": true
+}

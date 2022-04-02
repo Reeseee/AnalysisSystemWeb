@@ -1,0 +1,252 @@
+{
+    "classes": [
+        {
+            "methods": [
+                {
+                    "modifier": "+",
+                    "methodName": "TheEconomy",
+                    "parameters": []
+                }
+            ],
+            "className": "TheEconomy",
+            "isInterface": false,
+            "key": 1,
+            "properties": []
+        },
+        {
+            "methods": [
+                {
+                    "return_type": "void",
+                    "modifier": "+",
+                    "methodName": "attach",
+                    "parameters": [
+                        {
+                            "name": "obj",
+                            "type": "Observer"
+                        }
+                    ]
+                },
+                {
+                    "return_type": "void",
+                    "modifier": "+",
+                    "methodName": "detach",
+                    "parameters": [
+                        {
+                            "name": "obj",
+                            "type": "Observer"
+                        }
+                    ]
+                },
+                {
+                    "return_type": "void",
+                    "modifier": "+",
+                    "methodName": "notifyObservers",
+                    "parameters": []
+                },
+                {
+                    "return_type": "void",
+                    "modifier": "+",
+                    "methodName": "showState",
+                    "parameters": []
+                },
+                {
+                    "return_type": "String",
+                    "modifier": "+",
+                    "methodName": "getState",
+                    "parameters": []
+                },
+                {
+                    "return_type": "void",
+                    "modifier": "+",
+                    "methodName": "setState",
+                    "parameters": [
+                        {
+                            "name": "status",
+                            "type": "String"
+                        }
+                    ]
+                }
+            ],
+            "className": "ConcreteSubject",
+            "isInterface": false,
+            "key": 2,
+            "properties": [
+                {
+                    "propertyName": "subjectState",
+                    "modifier": "-",
+                    "type": "String"
+                }
+            ]
+        },
+        {
+            "methods": [
+                {
+                    "return_type": "void",
+                    "modifier": "+ {abstract}",
+                    "methodName": "attach",
+                    "parameters": [
+                        {
+                            "name": "obj",
+                            "type": "Observer"
+                        }
+                    ]
+                },
+                {
+                    "return_type": "void",
+                    "modifier": "+ {abstract}",
+                    "methodName": "detach",
+                    "parameters": [
+                        {
+                            "name": "obj",
+                            "type": "Observer"
+                        }
+                    ]
+                },
+                {
+                    "return_type": "void",
+                    "modifier": "+ {abstract}",
+                    "methodName": "notifyObservers",
+                    "parameters": []
+                }
+            ],
+            "className": "Subject",
+            "isInterface": true,
+            "key": 3,
+            "properties": []
+        },
+        {
+            "methods": [
+                {
+                    "return_type": "void",
+                    "modifier": "+ {abstract}",
+                    "methodName": "update",
+                    "parameters": []
+                }
+            ],
+            "className": "Observer",
+            "isInterface": true,
+            "key": 4,
+            "properties": []
+        },
+        {
+            "methods": [
+                {
+                    "modifier": "+ {static}",
+                    "methodName": "Optimist",
+                    "parameters": [
+                        {
+                            "name": "sub",
+                            "type": "ConcreteSubject"
+                        }
+                    ]
+                },
+                {
+                    "return_type": "void",
+                    "modifier": "+",
+                    "methodName": "update",
+                    "parameters": []
+                }
+            ],
+            "className": "Optimist",
+            "isInterface": false,
+            "key": 5,
+            "properties": []
+        },
+        {
+            "methods": [
+                {
+                    "modifier": "+",
+                    "methodName": "ConcreteObserver",
+                    "parameters": [
+                        {
+                            "name": "theSubject",
+                            "type": "ConcreteSubject"
+                        }
+                    ]
+                },
+                {
+                    "return_type": "void",
+                    "modifier": "+",
+                    "methodName": "update",
+                    "parameters": []
+                },
+                {
+                    "return_type": "void",
+                    "modifier": "+",
+                    "methodName": "showState",
+                    "parameters": []
+                }
+            ],
+            "className": "ConcreteObserver",
+            "isInterface": false,
+            "key": 6,
+            "properties": []
+        },
+        {
+            "methods": [
+                {
+                    "modifier": "+",
+                    "methodName": "Pessimist",
+                    "parameters": [
+                        {
+                            "name": "sub",
+                            "type": "ConcreteSubject"
+                        }
+                    ]
+                },
+                {
+                    "return_type": "void",
+                    "modifier": "+",
+                    "methodName": "update",
+                    "parameters": []
+                }
+            ],
+            "className": "Pessimist",
+            "isInterface": false,
+            "key": 7,
+            "properties": []
+        }
+    ],
+    "relations": [
+        {
+            "from": 1,
+            "to": 2,
+            "relationship": "generalization"
+        },
+        {
+            "from": 5,
+            "to": 6,
+            "relationship": "generalization"
+        },
+        {
+            "from": 2,
+            "to": 3,
+            "relationship": "realization"
+        },
+        {
+            "from": 2,
+            "to": 4,
+            "relationship": "association"
+        },
+        {
+            "from": 2,
+            "to": 4,
+            "relationship": "dependency"
+        },
+        {
+            "from": 6,
+            "to": 4,
+            "relationship": "realization"
+        },
+        {
+            "from": 6,
+            "to": 2,
+            "relationship": "association"
+        },
+        {
+            "from": 7,
+            "to": 6,
+            "relationship": "generalization"
+        }
+    ]
+}

@@ -29,22 +29,21 @@
 
         <!-- 菜单栏,如果未登录就不显示 -->
         <div class="topbar-title">
-          <!-- 注意：这里就是topNavState作用之处，根据当前路由所在根路由的type值判断显示不同顶部导航菜单 -->
           <el-row>
             <el-col :span="24">
               <el-menu
                 class="el-menu-demo"
                 mode="horizontal"
-                @select="handleSelect"
                 :router="true"
-                active-text-color="	#1E90FF"
+                active-text-color="rgb(53, 137, 255)"
                 text-color="#FFFAFA"
                 background-color="#373d41"
                 :default-active="$route.path"
+              
               >
                 <el-menu-item index="/projects">我的项目</el-menu-item>
-                <el-menu-item index="/analysis">结构分析</el-menu-item>
-                <el-menu-item index="/reengineering">逆向工程</el-menu-item>
+                <el-menu-item index="/projectAnalyze" disabled>结构分析</el-menu-item>
+                <el-menu-item index="/reengineering" disabled>逆向工程</el-menu-item>
                 <el-menu-item index="/records">操作记录</el-menu-item>
               </el-menu>
             </el-col>
@@ -52,7 +51,7 @@
         </div>
         <!-- 用户名菜单栏 -->
         <div class="topbar-account topbar-btn">
-          <el-row style="width: 80%" :span="24">
+          <el-row style="width: 100%" :span="24">
             <el-col :span="12">
               <el-dropdown
                 trigger="click"
@@ -60,7 +59,7 @@
                 @command="userMsghandleCommand"
               >
                 <span class="el-dropdown-link userinfo-inner">
-                  <i class="iconfont icon-user"></i> {{ userName }}
+                  <i class="iconfont icon-user"></i> {{ this.getUsername }}
                   <i class="el-icon-caret-bottom"></i
                 ></span>
                 <el-dropdown-menu slot="dropdown">
@@ -160,7 +159,7 @@ export default {
   data() {
     return {
       //是否登陆
-      userName: this.$store.getters.username,
+      //userName: this.$store.getters.username,
       userEmail: this.$store.getters.email,
       setUserMsgDialogVisible: false,
       setMsgRadio: 0,
@@ -221,14 +220,17 @@ export default {
   computed: {
     computeUserEmail() {
       return this.$store.state.userEmail;
+    },
+    getUsername(){
+      return this.$store.getters.username;
     }
   },
   methods: {
     //处理菜单栏的选择
-    handleSelect(key, keyPath) {
-      let _this = this;
-      _this.$store.state.mainPageIndex = key;
-    },
+    // handleSelect(key, keyPath) {
+    //   let _this = this;
+    //   _this.$store.state.mainPageIndex = key;
+    // },
 
     //右上角用户按钮下拉操作响应
     userMsghandleCommand(command) {
@@ -311,8 +313,7 @@ export default {
     },
     //退出系统
     logout() {
-      // sessionStorage.removeItem("user");
-      // removeInfo();
+      this.$store.commit("LOG_OUT"); 
       this.$router.push("/login");
     }
   }
