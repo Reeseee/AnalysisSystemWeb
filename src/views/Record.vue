@@ -7,9 +7,17 @@
       <el-table ref="logTable" :data="tableData" style="width: 100%">
         <el-table-column property="projectid" label="项目id" width="100">
         </el-table-column>
-        <el-table-column property="filename" label="项目文件" :show-overflow-tooltip="true">
+        <el-table-column
+          property="filename"
+          label="项目文件"
+          :show-overflow-tooltip="true"
+        >
         </el-table-column>
-        <el-table-column property="operatedate" label="操作时间" :formatter="timeformatter">
+        <el-table-column
+          property="operatedate"
+          label="操作时间"
+          :formatter="timeformatter"
+        >
         </el-table-column>
         <el-table-column property="operation" label="操作"> </el-table-column>
         <el-table-column fixed="right" label="结果" width="100">
@@ -82,8 +90,26 @@ export default {
     },
     //查看跳转
     handleClick(row) {
-      console.log(row.operateresult);
-      this.$router.push(row.operateresult);
+      // console.log(row.operateresult);
+      // this.$router.push(row.operateresult);
+      if (row.operation == "ProjectAnalyze") {
+        this.$router.push({
+          name: "ProjectAnalyze",
+          params: { id: row.projectid }
+        });
+      } else if (row.operation == "/dependency" || row.operation == "/call") {
+        const { href } = this.$router.resolve({
+          path: row.operation,
+          query: { id: row.projectid }
+        });
+        window.open(href, "_blank");
+      } else {
+        const { href } = this.$router.resolve({
+          path: row.operation,
+          query: { id: row.projectid , filepath: row.filename}
+        });
+        window.open(href, "_blank");
+      }
     }
   }, //组件中所使用方法，如向后端请求数据
   components: {} //在此注册此组件中要使用的其他组件（.vue）
