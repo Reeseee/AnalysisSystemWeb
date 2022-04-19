@@ -5,7 +5,7 @@
         <div class="sameLine">
           <el-menu
             mode="horizontal"
-            background-color="#000000"
+            background-color="#373d41"
             :default-active="$route.path"
             @select="handleSelect"
           >
@@ -28,7 +28,7 @@
                 :data="projectDir"
                 :props="defaultProps"
                 @node-click="handleNodeClick"
-                default-expand-all= true
+                default-expand-all
                 v-if="isloading"
               ></el-tree>
             </el-scrollbar>
@@ -66,15 +66,16 @@
           </el-main>
         </el-container>
       </el-container>
-      <el-button @click="test">tessssss</el-button>
+      <!-- <el-button @click="test">tessssss</el-button> -->
  
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import {getProjectAnalyze} from "@/network/structureanalyze.js"
 export default {
-  name: "HelloWorld",
+  name: "ProjectAnalyze",
   data() {
     return {
       projectDir: [],
@@ -91,38 +92,10 @@ export default {
   },
   created() {
     this.id = this.$route.params.id;
-    //console.log(this.id);
-    // if(this.id==undefined){
-    //   this.$router.push({name:Project});
-    //   this.$message.error("请先选择进行分析的项目");
-    //   return;
-    // }
-    this.userId = 1;
-    let urlpath = "http://127.0.0.1:8001/projectAnalyze/initial/" + this.id;
-    axios
-      .get(
-        urlpath,
-        { params: { userId: this.userId } },
-        {
-          responseType: "json",
-          withCredentials: true
-        }
-      )
-      .then(response => {
-        this.projectAnalyzeVo = response.data;
-        console.log(response);
-        this.projectDir = this.projectAnalyzeVo.projectdir;
-        this.isloading = true;
-      });
+    this.userId = this.$store.getters.id;
+    this.getProjectVo();
   },
   methods: {
-    testAxios() {
-      return axios.get("/user", {
-        params: {
-          name: "virus"
-        }
-      });
-    },
     handleNodeClick(data) {
       console.log(data);
       let len = data.nodePath.length;
@@ -162,10 +135,17 @@ export default {
     //     this.$router.push("/login");
     //   }
     // },
-    test() {
-      console.log(this.id);
-    }
+
+    getProjectVo(){
+      getProjectAnalyze(this.id,this.userId).then(response => {
+        this.projectAnalyzeVo = response;
+        this.projectDir = this.projectAnalyzeVo.projectdir;
+        this.isloading = true;
+      });
+    },
+
   }
+
 };
 </script>
 
@@ -252,8 +232,9 @@ export default {
   font-size: 20px;
   font-weight: 900;
   display: inline-block;
-  color: #ffffff;
+  color: #000;
 }
+
 
 .dirclass {
   font-size: 30px;
@@ -262,7 +243,7 @@ export default {
 
 .fileDetailClass {
   font-size: 20px;
-  color: #ffffff;
+  color: #000;
 }
 
 .word-v-middle {

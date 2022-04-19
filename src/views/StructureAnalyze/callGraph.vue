@@ -1,55 +1,13 @@
 <template>
   <div>
-    <div class="wrapper">
-      <!-- 页面头部部分 -->
-      <div class="header">
-        <div class="logo">代码分析系统</div>
-        <!-- 水平一级菜单 -->
-        <div style="float:left;">
-          <el-menu
-            :default-active="toIndex()"
-            mode="horizontal"
-            background-color="#000000"
-            @select="handleSelect"
-          >
-            <el-menu-item index="1">我的项目</el-menu-item>
-            <el-menu-item index="2">结构分析</el-menu-item>
-            <el-menu-item index="3">逆向工程</el-menu-item>
-            <el-menu-item index="4"
-              ><a href="https://www.ele.me" target="_blank"
-                >历史操作</a
-              ></el-menu-item
-            >
-          </el-menu>
-        </div>
-
-        <div class="header-right">
-          <div class="header-user-con">
-            <!-- 用户头像，根据需要自行修改图片路径 -->
-            <!-- 用户名下拉菜单 -->
-            <el-dropdown class="user-name" trigger="click">
-              <span class="el-dropdown-link">
-                hh
-                <i class="el-icon-caret-bottom"></i>
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item disabled>修改密码</el-dropdown-item>
-                <el-dropdown-item command="loginout">退出登录</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div>
-      <div class="sameLine">当前项目为:xxx</div>
+      <div class="sameLine">当前项目为:</div>
       <div class="sameLine">{{ this.id }}</div>
       <div class="sameLine">
         <el-menu
           :default-active="toIndex()"
           mode="horizontal"
-          background-color="#000000"
+          background-color="#373d41"
           @select="handleSelect"
         >
           <el-menu-item index="1">生成项目调用关系</el-menu-item>
@@ -80,8 +38,9 @@
 <script>
 import G6 from "@antv/g6";
 import axios from "axios";
+import {getProjectCall} from "@/network/structureanalyze.js"
 export default {
-  name: "HelloWorld",
+  name: "callGraph",
   data() {
     return {
       data: [
@@ -153,32 +112,10 @@ export default {
   },
   mounted() {
     this.id = this.$route.query.id;
-    console.log("this.id", this.id);
-    let urlpath = "http://127.0.0.1:8001/projectAnalyze/call/" + this.id;
-    axios
-      .get(
-        urlpath,
-        { params: { userId: this.userId } },
-        {
-          responseType: "json",
-          withCredentials: true
-        }
-      )
-      .then(response => {
-        this.gdata = response.data;
-        console.log(response);
-        console.log(this.gdata);
-        this.initTree();
-      });
+    this.userId = this.$store.getters.id;
+    this.getCallInformation();
   },
   methods: {
-    testAxios() {
-      return axios.get("/user", {
-        params: {
-          name: "virus"
-        }
-      });
-    },
     // 根据路径绑定到对应的一级菜单，防止页面刷新重新跳回第一个
     toIndex() {
       return this.$route.path.split("/")[1];
@@ -267,7 +204,8 @@ export default {
       })
         .then(response => {
           //文件名 文件保存对话框中的默认显示
-          let fileName = "call.txt";
+          var timestamp = new Date().getTime()
+          let fileName = timestamp + ".call";
           let data = response.data;
           if (!data) {
             return;
@@ -289,6 +227,14 @@ export default {
         .catch(response => {
           this.$message.error(response);
         });
+    },
+    getCallInformation(){
+      getProjectCall(this.id,this.userId).then(response => {
+        this.gdata = response;
+        console.log(response);
+        console.log(this.gdata);
+        this.initTree();
+      });
     }
   }
   // handleCommand(command) {
@@ -302,7 +248,7 @@ export default {
 
 <style scoped>
 #building {
-  background: url("../assets/images/typebg.jpg");
+  /* background: url("../assets/images/typebg.jpg"); */
   width: 100%;
   height: 100%;
   position: fixed;

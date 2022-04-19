@@ -1,56 +1,13 @@
 <template>
   <div id="building">
     <div>
-      <div class="wrapper">
-        <!-- 页面头部部分 -->
-        <div class="header">
-          <div class="logo">代码分析系统</div>
-          <!-- 水平一级菜单 -->
-          <div style="float:left;">
-            <el-menu
-              mode="horizontal"
-              background-color="#000000"
-              @select="handleSelect"
-            >
-              <el-menu-item index="1">我的项目</el-menu-item>
-              <el-menu-item index="2">结构分析</el-menu-item>
-              <el-menu-item index="3">逆向工程</el-menu-item>
-              <el-menu-item index="4"
-                ><a href="https://www.ele.me" target="_blank"
-                  >历史操作</a
-                ></el-menu-item
-              >
-            </el-menu>
-          </div>
-
-          <div class="header-right">
-            <div class="header-user-con">
-              <!-- 用户头像，根据需要自行修改图片路径 -->
-              <!-- 用户名下拉菜单 -->
-              <el-dropdown class="user-name" trigger="click">
-                <span class="el-dropdown-link">
-                  hh
-                  <i class="el-icon-caret-bottom"></i>
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item disabled>修改密码</el-dropdown-item>
-                  <el-dropdown-item command="loginout"
-                    >退出登录</el-dropdown-item
-                  >
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div>
-        <div class="sameLine">当前项目为:xxx</div>
+        <div class="sameLine">当前项目为: </div>
         <div class="sameLine">{{ this.id }}</div>
         <div class="sameLine">
           <el-menu
             mode="horizontal"
-            background-color="#000000"
+            background-color="#373d41"
             @select="handleSelect"
           >
             <el-menu-item index="/ast">生成文件抽象语法树</el-menu-item>
@@ -131,8 +88,9 @@
 
 <script>
 import axios from "axios";
+import {getFileAnalyze,getFileDependency,getFileCall} from "@/network/structureanalyze.js"
 export default {
-  name: "HelloWorld",
+  name: "FileAnalyze",
   data() {
     return {
       id: 0,
@@ -150,63 +108,10 @@ export default {
   created() {
     this.id = this.$route.query.id;
     this.filepath = this.$route.query.filepath;
-    let urlpath = "http://127.0.0.1:8001/fileAnalyze/initial/" + this.id;
-    axios
-      .get(
-        urlpath,
-        { params: { fileName: this.filepath, userId: this.userId } },
-        {
-          responseType: "json",
-          withCredentials: true
-        }
-      )
-      .then(response => {
-        this.fileAnalyzeVo = response.data;
-        this.functionInformations = JSON.parse(this.fileAnalyzeVo.functionvariable);
-        console.log(response);
-        this.isloading = true;
-      });
-
-    let depPath = "http://127.0.0.1:8001/fileAnalyze/dependency/" + this.id;
-    axios
-      .get(
-        depPath,
-        { params: { fileName: this.filepath, userId: this.userId } },
-        {
-          responseType: "json",
-          withCredentials: true
-        }
-      )
-      .then(response => {
-        this.dependencyVo = response.data;
-        console.log(response);
-        this.depIsloading = true;
-      });
-
-    let callPath = "http://127.0.0.1:8001/fileAnalyze/call/" + this.id;
-    axios
-      .get(
-        callPath,
-        { params: { fileName: this.filepath, userId: this.userId } },
-        {
-          responseType: "json",
-          withCredentials: true
-        }
-      )
-      .then(response => {
-        this.callRelationVo = response.data;
-        console.log(response);
-        this.callIsloading = true;
-      });
+    this.userId = this.$store.getters.id;
+    this.getFileAnalyzeInformation();
   },
   methods: {
-    testAxios() {
-      return axios.get("/user", {
-        params: {
-          name: "virus"
-        }
-      });
-    },
     handleNodeClick(data) {
       console.log(data);
     },
@@ -220,6 +125,24 @@ export default {
         query: { id: this.id, filepath: this.filepath }
       });
       window.open(href, "_blank");
+    },
+    getFileAnalyzeInformation(){
+      getFileAnalyze(this.id,this.filepath,this.userId).then(response => {
+        this.fileAnalyzeVo = response;
+        this.functionInformations = JSON.parse(this.fileAnalyzeVo.functionvariable);
+        console.log(response);
+        this.isloading = true;
+      });
+      getFileDependency(this.id,this.filepath,this.userId).then(response => {
+        this.dependencyVo = response;
+        console.log(response);
+        this.depIsloading = true;
+      });
+      getFileCall(this.id,this.filepath,this.userId).then(response => {
+        this.callRelationVo = response;
+        console.log(response);
+        this.callIsloading = true;
+      });
     }
   }
   // handleCommand(command) {
@@ -233,7 +156,7 @@ export default {
 
 <style scoped>
 #building {
-  background: url("../assets/images/typebg.jpg");
+  /* background: url("../assets/images/typebg.jpg"); */
   width: 100%;
   height: 100%;
   position: relative;
@@ -316,12 +239,12 @@ export default {
   font-size: 20px;
   font-weight: 900;
   display: inline-block;
-  color: #ffffff;
+  color: #000000;
 }
 
 .fileDetailClass {
   font-size: 20px;
-  color: #ffffff;
+  color: #000000;
 }
 
 .word-v-middle {

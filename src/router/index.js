@@ -18,8 +18,12 @@ const ReengineeringVS = () => import("@/views/ReverseEngineering/ReengineeringVS
 const ClassDiagram = () => import("@/views/ReverseEngineering/ClassDiagram");
 const ControlFlow = () => import("@/views/ReverseEngineering/ControlFlow");
 
-const ProjectAnalyze = () => import("@/views/StructureAnalyze/ProjectAnalyze");
-import chooseProject from "@/views/StructureAnalyze/chooseProject"
+import ProjectAnalyze from "@/views/StructureAnalyze/ProjectAnalyze";
+import FileAnalyze from '@/views/StructureAnalyze/FileAnalyze'
+import chooseProject from "@/views/StructureAnalyze/chooseProject";
+import astGraph from "@/views/StructureAnalyze/astGraph";
+import dependencyGraph from '@/views/StructureAnalyze/dependencyGraph';
+import callGraph from '@/views/StructureAnalyze/callGraph';
 
 
 Vue.use(Router)
@@ -64,7 +68,7 @@ export default new Router({
     },
     {
       path: '/chooseProject',
-      name: 'chooseProject',
+      name: 'ChooseProject',
       component: chooseProject
     },
     {
@@ -72,6 +76,25 @@ export default new Router({
       name: 'ProjectAnalyze',
       component: ProjectAnalyze
     },
-    
+    {
+      path: '/file',
+      name: 'FileAnalyze',
+      component: FileAnalyze
+    },
+    {
+      path: '/dependency',
+      name: 'dependencyGraph',
+      component: dependencyGraph
+    },
+    {
+      path: '/ast',
+      name: 'astGraph',
+      component: astGraph
+    },
+    {
+      path: '/call',
+      name: 'callGraph',
+      component: callGraph
+    }
   ]
 })

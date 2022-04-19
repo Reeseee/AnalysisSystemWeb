@@ -21,6 +21,10 @@ import VueAxios from 'vue-axios'
 import gojs from 'gojs'
 Vue.prototype.go = gojs
 
+import G6 from '@antv/g6';
+Vue.prototype.$G6 = G6
+Vue.use(G6);
+
 import { message } from './lib/resetMessage';
 
 
