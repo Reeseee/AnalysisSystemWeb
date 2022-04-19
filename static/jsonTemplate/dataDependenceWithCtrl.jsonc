@@ -1,0 +1,181 @@
+//其中每个连通分支对应类文件中的一个函数
+{
+  "version": "v2.0",
+  "directed": true, //是否为有向图:bool
+  "file": "Test1.java", //该模型的文件来源:String
+  //结点列表/程序块列表:Array (该分析以单独的语句作为基本程序块,其中包括数据结点和纯控制结点)
+  "nodes": [
+    {
+      "defs": ["args"], //语句中所定义的变量:Array
+      "line": 4, //语句所在代码文件中的行数:int
+      "uses": [], //语句中所使用的变量:Array
+      "label": "void main(String[] args)", //语句内容:String
+      "key": 0 //唯一标识语句的键值:int
+    }, //数据结点
+    {
+      "defs": ["i"],
+      "line": 5,
+      "uses": [],
+      "label": "int i = 0",
+      "key": 1
+    },
+    {
+      "defs": ["i"],
+      "line": 6,
+      "uses": ["i"],
+      "label": "i++",
+      "key": 2
+    },
+    {
+      "defs": [],
+      "line": 7,
+      "uses": ["i"],
+      "label": "if (i > 0)",
+      "key": 3
+    },
+    {
+      "defs": [],
+      "line": 8,
+      "uses": [],
+      "label": "System.out.println('Positive')",
+      "key": 4
+    },
+    {
+      "defs": ["i"],
+      "line": 9,
+      "uses": ["i"],
+      "label": "i *= 2",
+      "key": 5
+    },
+    {
+      "line": 0,
+      "label": "endif",
+      "key": 6
+    }, //控制结点
+    {
+      "defs": [],
+      "line": 11,
+      "uses": [],
+      "label": "System.out.println('Non-positive')",
+      "key": 7
+    },
+    {
+      "defs": ["i"],
+      "line": 12,
+      "uses": ["i"],
+      "label": "i *= -2",
+      "key": 8
+    },
+    {
+      "defs": [],
+      "line": 14,
+      "uses": [],
+      "label": "System.out.println('End')",
+      "key": 9
+    }
+  ],
+  //控制流及数据依赖关系列表:Array
+  "edges": [
+    {
+      "from": 0, //控制流的source程序块的键值:int
+      "to": 1, //控制流的target程序块的键值:int
+      "label": "EPSILON", //控制流的标签/类型:String (enum,"EPSILON":普通顺序控制流 "TRUE":条件判断正确 "FALSE"：条件判断错误 "THROWS":抛出 "CALLS":调用 "RETURN":返回)
+      "type": "Control", //有向边的种类:String (enum,"Control":控制流 "Flow":数据流/数据依赖关系)
+      "key": 0 //标识该控制流的唯一键值:int
+    },
+    {
+      "from": 1,
+      "to": 2,
+      "label": "EPSILON",
+      "type": "Control",
+      "key": 1
+    },
+    {
+      "from": 2,
+      "to": 3,
+      "label": "EPSILON",
+      "type": "Control",
+      "key": 2
+    },
+    {
+      "from": 3,
+      "to": 4,
+      "label": "TRUE",
+      "type": "Control",
+      "key": 3
+    },
+    {
+      "from": 4,
+      "to": 5,
+      "label": "EPSILON",
+      "type": "Control",
+      "key": 4
+    },
+    {
+      "from": 5,
+      "to": 6,
+      "label": "EPSILON",
+      "type": "Control",
+      "key": 5
+    },
+    {
+      "from": 3,
+      "to": 7,
+      "label": "FALSE",
+      "type": "Control",
+      "key": 6
+    },
+    {
+      "from": 7,
+      "to": 8,
+      "label": "EPSILON",
+      "type": "Control",
+      "key": 7
+    },
+    {
+      "from": 8,
+      "to": 6,
+      "label": "EPSILON",
+      "type": "Control",
+      "key": 8
+    },
+    {
+      "from": 6,
+      "to": 9,
+      "label": "EPSILON",
+      "type": "Control",
+      "key": 9
+    },
+    {
+      "from": 1, //定义该数据依赖中变量的程序块的键值:int
+      "to": 2, //使用该数据依赖中变量的程序块的键值:int
+      "label": "i", //该数据依赖依赖中传递的变量:String
+      "type": "FLOW", //有向边的种类:String (enum,"Control":控制流 "Flow":数据流/数据依赖关系)
+      "key": 10 //标识该数据依赖关系的唯一键值:int
+    }, //数据依赖关系
+    {
+      "from": 2,
+      "to": 3,
+      "label": "i",
+      "type": "FLOW",
+      "key": 11
+    },
+    {
+      "from": 2,
+      "to": 8,
+      "label": "i",
+      "type": "FLOW",
+      "key": 12
+    },
+    {
+      "from": 2,
+      "to": 5,
+      "label": "i",
+      "type": "FLOW",
+      "key": 13
+    }
+  ],
+  "label": "DDG of Test1.java", //文件标签:String (以“{type} of {filename}”的形式标识该文件的内容)
+  "type": "Data Dependence Graph (DDG) with Control Flow", //文件所表示的模型类型:String
+  "multigraph": true //是否为多重图:bool
+}

@@ -1,0 +1,126 @@
+//其中每个连通分支对应类文件中的一个函数
+{
+  "version": "v2.0", //版本号
+  "directed": true, //是否为有向图:bool
+  "file": "Test1.java", //该模型的文件来源:String
+  //结点列表/程序块列表:Array (该分析以单独的语句作为基本程序块)
+  "nodes": [
+    {
+      "line": 4, //语句所在代码文件中的行数:int
+      "label": "void main(String[] args)", //语句内容:String
+      "key": 0 //唯一标识语句的键值:int
+    },
+    {
+      "line": 5,
+      "label": "int i = 0",
+      "key": 1
+    },
+    {
+      "line": 6,
+      "label": "i++",
+      "key": 2
+    },
+    {
+      "line": 7,
+      "label": "if (i > 0)",
+      "key": 3
+    },
+    {
+      "line": 8,
+      "label": "System.out.println('Positive')",
+      "key": 4
+    },
+    {
+      "line": 9,
+      "label": "i *= 2",
+      "key": 5
+    },
+    {
+      "line": 0,
+      "label": "endif",
+      "key": 6
+    },
+    {
+      "line": 11,
+      "label": "System.out.println('Non-positive')",
+      "key": 7
+    },
+    {
+      "line": 12,
+      "label": "i *= -2",
+      "key": 8
+    },
+    {
+      "line": 14,
+      "label": "System.out.println('End')",
+      "key": 9
+    }
+  ],
+  "package": "", //该模型/文件所在包:String
+  //控制流列表:Array
+  "edges": [
+    {
+      "from": 0, //控制流的source程序块的键值:int
+      "to": 1, //控制流的target程序块的键值:int
+      "label": "EPSILON", //控制流的标签/类型:String (enum,"EPSILON":普通顺序控制流 "TRUE":条件判断正确 "FALSE"：条件判断错误 "THROWS":抛出 "CALLS":调用 "RETURN":返回)
+      "key": 0 //标识该控制流的唯一键值:int
+    },
+    {
+      "from": 1,
+      "to": 2,
+      "label": "EPSILON",
+      "key": 1
+    },
+    {
+      "from": 2,
+      "to": 3,
+      "label": "EPSILON",
+      "key": 2
+    },
+    {
+      "from": 3,
+      "to": 4,
+      "label": "TRUE",
+      "key": 3
+    },
+    {
+      "from": 4,
+      "to": 5,
+      "label": "EPSILON",
+      "key": 4
+    },
+    {
+      "from": 5,
+      "to": 6,
+      "label": "EPSILON",
+      "key": 5
+    },
+    {
+      "from": 3,
+      "to": 7,
+      "label": "FALSE",
+      "key": 6
+    },
+    {
+      "from": 7,
+      "to": 8,
+      "label": "EPSILON",
+      "key": 7
+    },
+    {
+      "from": 8,
+      "to": 6,
+      "label": "EPSILON",
+      "key": 8
+    },
+    {
+      "from": 6,
+      "to": 9,
+      "label": "EPSILON",
+      "key": 9
+    }
+  ],
+  "label": "CFG of Test1.java", //文件标签:String (以“{type} of {filename}”的形式标识该文件的内容)
+  "type": "Control Flow Graph (CFG)", //文件所表示的模型类型:String
+  "multigraph": true //是否为多重图:bool
+}

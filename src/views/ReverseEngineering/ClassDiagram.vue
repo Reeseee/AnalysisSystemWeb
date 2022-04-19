@@ -1,72 +1,52 @@
 <template>
-  <div style="position: relative;">
+  <div
+    style="position: relative;"
+    v-loading="loading"
+    element-loading-text="加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)"
+  >
     <div
       ref="diagram"
       id="myDiagramDiv"
-      style="background-color: #f2f2f2;border: solid 2px black; width:100%;height:490px;justify-content: center;margin: 0 auto;"
+      style="background-color: #f2f2f2;border: solid 2px black; width:100%;height:600px;justify-content: center;margin: 0 auto;"
     ></div>
+    <div id="myOverviewDiv"></div>
+   
+    <el-button style="float:right" @click="exportJson">结果导出</el-button>
   </div>
 </template>
 
 //组件行爲
 
 <script>
-import { getVSResultClassjson } from "@/network/reengineering.js";
+import {
+  getClassDiagram,
+  exportClassDiagram
+} from "@/network/reengineering.js";
 export default {
   name: "ClassDiagram",
   data() {
     return {
       myDiagram: null, //获取的类图
-      nodedata: [
-        {
-          methods: [],
-          className: "B",
-          isInterface: false,
-          key: 1,
-          properties: []
-        },
-        {
-          methods: [],
-          className: "A",
-          isInterface: false,
-          key: 2,
-          properties: [
-            { propertyName: "x", modifier: "-", type: "int" },
-            { propertyName: "y", modifier: "-", type: "int[]" }
-          ]
-        },
-        {
-          methods: [],
-          className: "C",
-          isInterface: false,
-          key: 3,
-          properties: []
-        },
-        {
-          methods: [],
-          className: "D",
-          isInterface: false,
-          key: 4,
-          properties: []
-        }
-      ],
-      linkdata: [
-        { from: 1, to: 2, relationship: "association" },
-        { from: 3, to: 2, relationship: "association" },
-        { from: 4, to: 2, relationship: "association" }
-      ]
+      nodedata: [],
+      linkdata: [],
+      loading: true,
+      label: ""
     };
   },
 
   computed: {},
   mounted() {
+    this.loading = true;
     let _this = this;
-
-    getVSResultClassjson()
+    getClassDiagram(this.$store.getters.project.id, this.$store.getters.id)
       .then(res => {
-        console.log(res);
-        this.nodedata = res.data.classes;
-        this.linkdata = res.data.relations;
+        //console.log(res);
+        this.nodedata = res.classes;
+        this.linkdata = res.relations;
+        this.label=res.label;
+        this.$store.commit("SET_LABEL",res.label);
         const $ = go.GraphObject.make;
 
         var myDiagram = $(go.Diagram, "myDiagramDiv", {
@@ -86,12 +66,12 @@ export default {
 
           // }),
           //层次布局(较慢)
-        //   layout: $(go.LayeredDigraphLayout, {
-        //     direction: 0
-        //   }),
+          //   layout: $(go.LayeredDigraphLayout, {
+          //     direction: 0
+          //   }),
           initialAutoScale: go.Diagram.Uniform,
-          "undoManager.isEnabled": false,
-          "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom
+          "undoManager.isEnabled": false
+          // "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom
         });
         // show visibility or access as a single character at the beginning of each property or method
         function convertVisibility(v) {
@@ -407,10 +387,40 @@ export default {
           nodeDataArray: this.nodedata,
           linkDataArray: this.linkdata
         });
+        _this.loading = false;
+        // Overview
+        var myOverview = $(
+          go.Overview,
+          "myOverviewDiv", // the HTML DIV element for the Overview
+          { observed: myDiagram, contentAlignment: go.Spot.Center }
+        ); // tell it which Diagram to show and pan
       })
       .catch(function(error) {
         console.log(error);
+        _this.loading = false;
+        _this.$message.error("获取类图失败");
       });
+  },
+  methods: {
+    exportJson() {
+      exportClassDiagram(this.$store.getters.project.id, this.$store.getters.id)
+        .then(res => {
+          var blob = new Blob([res]);
+          var downloadElement = document.createElement("a");
+          downloadElement.style.display = "none";
+          var href = window.URL.createObjectURL(blob); //创建下载的链接
+          downloadElement.href = href;
+          downloadElement.download = this.label+".json"; //下载后文件名
+          document.body.appendChild(downloadElement);
+          downloadElement.click(); //点击下载
+          document.body.removeChild(downloadElement); //下载完成移除元素
+          window.URL.revokeObjectURL(href); //释放掉blob对象
+        })
+        .catch(err => {
+          //console.log(err);
+          this.$message.error("文件下载失败");
+        });
+    }
   }
 };
 </script>

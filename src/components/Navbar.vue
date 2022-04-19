@@ -63,12 +63,12 @@
                   <i class="el-icon-caret-bottom"></i
                 ></span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item icon="el-icon-message">
+                  <!-- <el-dropdown-item icon="el-icon-message">
                     <span>{{ userEmail }}</span></el-dropdown-item
                   >
                   <el-dropdown-item command="setMsg" icon="el-icon-setting"
                     >设置
-                  </el-dropdown-item>
+                  </el-dropdown-item> -->
 
                   <el-dropdown-item command="logout" icon="el-icon-back"
                     >退出登录</el-dropdown-item

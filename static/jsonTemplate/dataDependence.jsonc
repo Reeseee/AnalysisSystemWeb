@@ -1,0 +1,124 @@
+//其中每个连通分支对应类文件中的一个函数
+{
+    "version":"v2.0",//版本号
+    "directed": true, //是否为有向图:bool
+    "file": "Test1.java", //该模型的文件来源:String
+    //结点列表/程序块列表:Array (该分析以单独的语句作为基本程序块,其中包括数据结点和纯控制结点)
+    "nodes": [
+        {
+            "defs": [
+                "args"
+            ],//语句中所定义的变量:Array
+            "line": 4, //语句所在代码文件中的行数:int
+            "uses": [],//语句中所使用的变量:Array
+            "label": "void main(String[] args)", //语句内容:String
+            "key": 0 //唯一标识语句的键值:int
+        },
+        {
+            "defs": [
+                "i"
+            ],
+            "line": 5,
+            "uses": [],
+            "label": "int i = 0",
+            "key": 1
+        },
+        {
+            "defs": [
+                "i"
+            ],
+            "line": 6,
+            "uses": [
+                "i"
+            ],
+            "label": "i++",
+            "key": 2
+        },
+        {
+            "defs": [],
+            "line": 7,
+            "uses": [
+                "i"
+            ],
+            "label": "if (i > 0)",
+            "key": 3
+        },
+        {
+            "defs": [],
+            "line": 8,
+            "uses": [],
+            "label": "System.out.println('Positive')",
+            "key": 4
+        },
+        {
+            "defs": [
+                "i"
+            ],
+            "line": 9,
+            "uses": [
+                "i"
+            ],
+            "label": "i *= 2",
+            "key": 5
+        },
+        {
+            "defs": [],
+            "line": 11,
+            "uses": [],
+            "label": "System.out.println('Non-positive')",
+            "key": 7
+        },
+        {
+            "defs": [
+                "i"
+            ],
+            "line": 12,
+            "uses": [
+                "i"
+            ],
+            "label": "i *= -2",
+            "key": 8
+        },
+        {
+            "defs": [],
+            "line": 14,
+            "uses": [],
+            "label": "System.out.println('End')",
+            "key": 9
+        }
+    ],
+    //数据依赖关系列表:Array
+    "edges": [
+        {
+            "from": 1, //定义该数据依赖中变量的程序块的键值:int
+            "to": 2, //使用该数据依赖中变量的程序块的键值:int
+            "label": "i", //该数据依赖依赖中传递的变量:String
+            "type": "FLOW", //有向边的种类:String (由于该图为省去了控制流，所以type均为"FLOW"，即只显示数据依赖关系)
+            "key": 10 //标识该数据依赖关系的唯一键值:int
+          }, //数据依赖关系
+        {
+            "from": 2,
+            "to": 3,
+            "label": "i",
+            "type": "FLOW",
+            "key": 11
+        },
+        {
+            "from": 2,
+            "to": 8,
+            "label": "i",
+            "type": "FLOW",
+            "key": 12
+        },
+        {
+            "from": 2,
+            "to": 5,
+            "label": "i",
+            "type": "FLOW",
+            "key": 13
+        }
+    ],
+    "label": "DDG of Test1.java",//文件标签:String (以“{type} of {filename}”的形式标识该文件的内容)
+    "type": "Data Dependence Graph (DDG)",//文件所表示的模型类型:String
+    "multigraph": true//是否为多重图:bool
+}

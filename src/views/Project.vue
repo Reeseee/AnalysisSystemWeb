@@ -257,6 +257,8 @@ export default {
     //进入逆向模块
     toReengineering() {
       this.dialogVisible1 = false;
+      this.$store.commit("SET_VSIDX",0);
+      this.$store.commit("SET_LABEL","");
       this.$router.push("/reengineering");
     }
     // changeFile(file, fileList) {},

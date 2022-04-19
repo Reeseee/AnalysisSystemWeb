@@ -1,0 +1,96 @@
+{
+    "version":"v2.0",//版本号:String
+    //类列表:Array
+    "classes": [
+        {
+            //该类的方法列表:Array
+            "methods": [
+                {
+                    "modifier": "+",//方法的修饰符:String (enum，"+"/"-"/"#"与 "{abstract}"/"{static}"/""的组合)
+                    "methodName": "ConcreteDecoratorA",//方法名:String
+                    //该方法的参数列表:Array
+                    "parameters": [
+                        {
+                            "name": "c",//参数名称:String
+                            "type": "Component"//参数类型:String
+                        }
+                    ]
+                },
+                {
+                    "return_type": "String",//返回类型:String (若为构造函数，则无返回类型)
+                    "modifier": "+",
+                    "methodName": "operation",
+                    "parameters": []
+                }
+            ],
+
+            "className": "ConcreteDecoratorA",//类名:String
+            "isInterface": false,//该类是否为接口:Boolean (true:该类为接口 false:该类为普通类)
+            "key": 1,//标识该类的唯一键值:int
+            //该类的属性列表:Array
+            "properties": [
+                {
+                    "propertyName": "addedState",//属性名:String
+                    "modifier": "-",//属性的修饰符:String (enum:"+"/"-"/"#"与 "{abstract}"/"{static}"/""的组合)
+                    "type": "String"//属性的数据类型:String
+                }
+            ]
+        },
+        {
+            "methods": [],
+            "className": "Decorator",
+            "isInterface": false,
+            "key": 2,
+            "properties": []
+        },
+        {
+            "methods": [
+                {
+                    "return_type": "String",
+                    "modifier": "+ {abstract}",
+                    "methodName": "operation",
+                    "parameters": []
+                }
+            ],
+            "className": "Component",
+            "isInterface": true,
+            "key": 3,
+            "properties": []
+        },
+        {
+            "methods": [
+                {
+                    "return_type": "String",
+                    "modifier": "+",
+                    "methodName": "operation",
+                    "parameters": []
+                }
+            ],
+            "className": "ConcreteComponent",
+            "isInterface": false,
+            "key": 4,
+            "properties": []
+        }
+    ],
+   
+    //类间关系列表:Array
+    "relations": [
+        {
+            "from": 1,//关系的source:int
+            "to": 2,//关系的target:int
+            "relationship": "generalization"//关系的类型:String (enum,“generalization”:泛化 “dependency”:依赖 "realization":实现 "association":关联 "aggregation":聚合 "composition":组合)
+        },
+        {
+            "from": 1,
+            "to": 3,
+            "relationship": "dependency"
+        },
+        {
+            "from": 4,
+            "to": 3,
+            "relationship": "realization"
+        }
+    ],
+    "label": "CD of main",//文件标签:String (以“{type} of {filename}”的形式标识该文件的内容)
+    "type": "Class Diagram (CD)"//文件所表示的模型类型:String
+}

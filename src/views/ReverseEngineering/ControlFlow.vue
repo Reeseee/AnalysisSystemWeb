@@ -1,182 +1,283 @@
 <template>
-  <div style="position: relative;">
+  <div
+    style="position: relative;"
+    v-loading="loading"
+    element-loading-text="加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)"
+  >
     <div
       ref="diagram"
       id="myDiagramDiv"
-      style="background-color: #f2f2f2;border: solid 2px black; width:100%;height:490px;justify-content: center;margin: 0 auto;"
+      style="background-color: #f2f2f2;border: solid 2px black; width:100%;height:600px;justify-content: center;margin:0 auto;"
     ></div>
+    <div id="myOverviewDiv"></div>
+    <el-button style="float:right" @click="exportJson">结果导出</el-button>
   </div>
 </template>
 
 <script>
-import { getVSResultControlFlowjson } from "@/network/reengineering.js";
+import {
+  getVSResultControlFlowjson,
+  getControlFlow,
+  exportControlFlow
+} from "@/network/reengineering.js";
 export default {
   name: "ControlFlow",
   data() {
-    //组件中所用的数据
     return {
-      nodedata: [
-        {
-          key: 1,
-          text: "Cognitive Procedural",
-          loc: "300 300",
-          category: "center"
-        },
-        {
-          key: 2,
-          text: "Cognitive Problem Solving",
-          loc: "600 300",
-          category: "center",
-          hicolor: "lightblue",
-          hiwidth: 7
-        },
-        { key: 11, text: "Logical Reasoning", loc: "450 275" },
-        { key: 12, text: "Scaffolding", loc: "450 325" },
-        { key: 13, text: "Part Task Training", loc: "425 400" },
-        { key: 21, text: "Training Wheels", loc: "325 125" },
-        { key: 22, text: "Exploratory Learning", loc: "250 150" },
-        { key: 23, text: "Learner Control", loc: "650 150" },
-        { key: 31, text: "Overlearning", loc: "450 475" }
-      ],
-      linkdata: [
-        { from: 1, to: 11, color: "gray" },
-        { from: 1, to: 12, color: "gray", dash: [3, 2] },
-        { from: 1, to: 13, color: "olive", width: 2 },
-        { from: 1, to: 21, color: "olive", width: 3 },
-        { from: 1, to: 22, color: "olive", width: 2 },
-        { from: 1, to: 23, color: "crimson", width: 2 },
-        { from: 1, to: 31 },
-        { from: 2, to: 11, color: "gray" },
-        { from: 2, to: 12, color: "olive", width: 2 },
-        { from: 2, to: 13, color: "gray", dash: [3, 2] },
-        { from: 2, to: 21, color: "crimson", width: 2 },
-        { from: 2, to: 22, color: "crimson", width: 2 },
-        { from: 2, to: 23, color: "black", width: 3 },
-        { from: 2, to: 31, color: "black", dash: [3, 2] }
-      ]
+      myDiagram: {},
+      nodedata: [],
+      linkdata: [],
+      loading: true,
+      label: "", //图形的标签
+      //type: "" //图形的种类
     };
   },
+  created() {},
   mounted() {
-    let _this = this;
+    this.init();
+    this.drawDiagram();
+  }, //组件刚挂载的一系列操作
+  computed: {
+    getFilePath() {
+      return this.$store.getters.filepath;
+    }
+  },
+  watch: {
+    getFilePath(curval, oldval) {
+      //this.init();
+      this.drawDiagram();
+    }
+  },
+  methods: {
+    exportJson() {
+      exportControlFlow(
+        this.$store.getters.project.id,
+        this.getFilePath,
+        this.$store.getters.id
+      )
+        .then(res => {
+          var blob = new Blob([res]);
+          var downloadElement = document.createElement("a");
+          downloadElement.style.display = "none";
+          var href = window.URL.createObjectURL(blob); //创建下载的链接
+          downloadElement.href = href;
+          downloadElement.download =
+            this.label.substr(0, this.label.indexOf(".java")) + ".json"; //下载后文件名
+          document.body.appendChild(downloadElement);
+          downloadElement.click(); //点击下载
+          document.body.removeChild(downloadElement); //下载完成移除元素
+          window.URL.revokeObjectURL(href); //释放掉blob对象
+        })
+        .catch(err => {
+          //console.log(err);
+          this.$message.error("文件下载失败");
+        });
+    },
+    //初始化图形
+    init() {
+      let _this = this;
+      const $ = go.GraphObject.make; // for conciseness in defining templates
 
-    getVSResultControlFlowjson()
-      .then(res => {
-        _this.nodedata = res.data.nodes;
-        _this.linkdata = res.data.edges;
-        // For details, see https://gojs.net/latest/intro/buildingObjects.html
-        const $ = go.GraphObject.make; // for conciseness in defining templates
+      // some constants that will be reused within templates
 
-        // some constants that will be reused within templates
+      _this.myDiagram = $(
+        go.Diagram,
+        "myDiagramDiv", // must name or refer to the DIV HTML element
+        {
+          // have mouse wheel events zoom in and out instead of scroll up and down
+          // "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
 
-        var myDiagram = $(
-          go.Diagram,
-          "myDiagramDiv", // must name or refer to the DIV HTML element
-          {
-            // have mouse wheel events zoom in and out instead of scroll up and down
-            "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
-            initialAutoScale: go.Diagram.Uniform, //显示整个图形
-            layout: $(go.LayeredDigraphLayout)
+          initialAutoScale: go.Diagram.Uniform, //显示整个图形
+          layout: $(go.LayeredDigraphLayout, {
+            layerSpacing: 25,
+            direction: 90,
+            columnSpacing: 15,
+            setsPortSpots: false
+          })
+        }
+      );
+      // Overview
+      var myOverview = $(
+        go.Overview,
+        "myOverviewDiv", // the HTML DIV element for the Overview
+        { observed: _this.myDiagram, contentAlignment: go.Spot.Center }
+      ); // tell it which Diagram to show and pan
+    },
+    //绘制
+    drawDiagram() {
+      this.loading = true;
+      let _this = this;
+      //console.log(this.$store.getters.file.nodePath);
+      getControlFlow(
+        this.$store.getters.project.id,
+        this.getFilePath,
+        this.$store.getters.id
+      )
+        //getVSResultControlFlowjson()
+        .then(res => {
+          //console.log(res);
+          if (res.nodes == undefined) {
+            this.$message.error("该文件中不存在控制流，请重新选择项目或文件");
+            _this.loading = false;
+            return;
           }
-        );
-
-        // define the Node template
-        myDiagram.nodeTemplate = $(
-          go.Node,
-          "Auto",
-          {
-            //locationSpot: go.Spot.Top,
-            isShadowed: true,
-            shadowBlur: 1,
-            shadowOffset: new go.Point(0, 1),
-            shadowColor: "rgba(0, 0, 0, .14)"
-          },
-          // define the node's outer shape, which will surround the TextBlock
-          $(go.Shape, "RoundedRectangle", {
-            name: "SHAPE",
-            fill: "#ffffff",
-            strokeWidth: 0,
-            stroke: null,
-            cursor: "pointer"
-          }),
-          $(
-            go.TextBlock,
-            {
-              font: "bold small-caps 11pt helvetica, bold arial, sans-serif",
-              margin: 7,
-              stroke: "rgba(0, 0, 0, .87)",
-              editable: false // editing the text automatically updates the model data
-            },
-            new go.Binding("text","label").makeTwoWay()
-          )
-        );
-
-        // replace the default Link template in the linkTemplateMap
-        myDiagram.linkTemplate = $(
-          go.Link, // the whole link panel
-          {
-            curve: go.Link.Bezier,
-            adjusting: go.Link.Stretch
-            //toShortLength: 3
-          },
-          new go.Binding("points").makeTwoWay(),
-          new go.Binding("curviness"),
-          $(
-            go.Shape, // the link shape
-            { strokeWidth: 1.5 }
-          ),
-          //from arrow
-          $(
-            go.Shape,
-            { fromArrow: "standard", stroke: null },
-            new go.Binding("from","source"),
-          ),
-          //to arrow
-          $(
-            go.Shape, // the arrowhead
-            { toArrow: "standard", stroke: null },
-            new go.Binding("to","target"),
-          ),
-          $(
-            go.Panel,
+          _this.nodedata = res.nodes;
+          _this.linkdata = res.edges == undefined ? [] : res.edges;
+          _this.label=res.label;
+          _this.$store.commit("SET_LABEL",res.label);
+          _this.type = res.type;
+          // For details, see https://gojs.net/latest/intro/buildingObjects.html
+          const $ = go.GraphObject.make;
+          // define the Node template
+          _this.myDiagram.nodeTemplate = $(
+            go.Node,
             "Auto",
+            {
+              locationSpot: go.Spot.Center,
+              isShadowed: true,
+              shadowBlur: 1,
+              shadowOffset: new go.Point(0, 1),
+              shadowColor: "rgba(0, 0, 0, .14)"
+            },
+            // define the node's outer shape, which will surround the TextBlock
+            $(go.Shape, "Ellipse", {
+              name: "SHAPE",
+              fill: "#ffffff",
+              strokeWidth: 0,
+              stroke: null,
+              cursor: "pointer"
+            }),
             $(
-              go.Shape, // the label background, which becomes transparent around the edges
-              {
-                fill: $(go.Brush, "Radial", {
-                  0: "rgb(245, 245, 245)",
-                  0.7: "rgb(245, 245, 245)",
-                  1: "rgba(245, 245, 245, 0)"
+              go.Panel,
+              "Horizontal",
+              $(
+                go.TextBlock,
+                {
+                  font: "bold 10pt sans-serif",
+                  margin: new go.Margin(5, 5, 5, 5),
+                  stroke: "rgba(0, 0, 0, .87)",
+                  editable: false // editing the text automatically updates the model data
+                },
+                new go.Binding("text", "line", l => {
+                  return l + ":";
                 }),
-                stroke: null
-              }
+                new go.Binding("visible", "line", l => {
+                  return l != 0;
+                })
+              ),
+              $(
+                go.TextBlock,
+                {
+                  font: "bold 10pt sans-serif",
+                  margin: new go.Margin(5, 5, 5, 0),
+                  stroke: "rgba(0, 0, 0, .87)",
+                  editable: false // editing the text automatically updates the model data
+                },
+                new go.Binding("text", "label").makeTwoWay()
+              )
+            )
+          );
+
+          // replace the default Link template in the linkTemplateMap
+          _this.myDiagram.linkTemplate = $(
+            go.Link, // the whole link panel
+            {
+              curve: go.Link.Bezier,
+              adjusting: go.Link.Stretch,
+              toShortLength: 2
+              // corner: 8,
+              // toEndSegmentLength: 20,
+              // toolTip: this.getTooltiptemplate()
+            },
+            new go.Binding("points").makeTwoWay(),
+            new go.Binding("curviness"),
+            $(
+              go.Shape, // the link shape
+              { strokeWidth: 1.5 }
+            ),
+            // //from arrow
+            // $(
+            //   go.Shape,
+            //   { fromArrow: "standard", stroke: null },
+            //   new go.Binding("from", "source")
+            // ),
+            //to arrow
+            $(
+              go.Shape, // the arrowhead
+              { toArrow: "triangle", stroke: null },
+              new go.Binding("to", "target")
             ),
             $(
-              go.TextBlock,
-              "", // the label text
-              {
-                textAlign: "center",
-                font: "9pt helvetica, arial, sans-serif",
-                margin: 4,
-                editable: false // enable in-place editing
-              },
-              // editing the text automatically updates the model data
-              new go.Binding("text","label").makeTwoWay()
+              go.Panel,
+              "Auto",
+              $(
+                go.Shape, // the label background, which becomes transparent around the edges
+                {
+                  fill: $(go.Brush, "Radial"),
+                  stroke: null
+                },
+                new go.Binding("background", "label", function(t) {
+                  return t === "" || t === "EPSILON"
+                    ? "transparent"
+                    : "rgba(245,245,245,0.75)";
+                })
+              ),
+              $(
+                go.TextBlock,
+                "", // the label text
+                {
+                  textAlign: "center",
+                  font: "9pt helvetica, arial, sans-serif",
+                  margin: 4,
+                  editable: false // enable in-place editing
+                },
+                // editing the text automatically updates the model data
+                new go.Binding("text", "label", function(l) {
+                  return l === "EPSILON" ? "" : l;
+                })
+              )
             )
-          )
-        );
-        myDiagram.model = new go.GraphLinksModel({
-          nodeDataArray: _this.nodedata,
-          linkDataArray: _this.linkdata
+          );
+
+          _this.myDiagram.model = new go.GraphLinksModel({
+            nodeDataArray: _this.nodedata,
+            linkDataArray: _this.linkdata
+          });
+
+          _this.loading = false;
+        })
+        .catch(err => {
+          console.log(err);
+          _this.loading = false;
+          _this.$message.error("获取控制流图失败");
         });
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }, //组件刚挂载的一系列操作
-  computed: {}, //计算属性
-  methods: {}, //组件中所使用方法，如向后端请求数据
+    }
+  },
   components: {} //在此注册此组件中要使用的其他组件（.vue）
 };
 </script>
 
-<style></style>
+<style scoped>
+#myOverviewDiv {
+  position: absolute;
+  width: 200px;
+  height: 100px;
+  top: 10px;
+  left: 10px;
+  background-color: #f2f2f2;
+  z-index: 300; /* make sure its in front */
+  border: solid 1px #000000;
+}
+/* #myInfoDiv {
+  position: absolute;
+  width: 200px;
+  height: 100px;
+  top: 110px;
+  left: 10px;
+  background-color: #131212a4;
+  z-index: 300; 
+  border: solid 1px #000000;
+} */
+</style>
