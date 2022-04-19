@@ -25,7 +25,7 @@
             <div>
               文件名
             </div>
-            <div>文件所处位置 {{ this.filepath }}</div>
+            <div>文件所处位置 {{ this.filepathvo }}</div>
           </el-aside>
 
           <el-main>
@@ -95,6 +95,7 @@ export default {
     return {
       id: 0,
       filepath: "",
+      filepathvo: "",
       fileAnalyzeVo: [],
       functionInformations: null, 
       dependencyVo: [],
@@ -109,6 +110,9 @@ export default {
     this.id = this.$route.query.id;
     this.filepath = this.$route.query.filepath;
     this.userId = this.$store.getters.id;
+    var ss = "" + this.id + "\\";
+    var index = this.filepath.indexOf(ss);
+    this.filepathvo = this.filepath.substring(index);
     this.getFileAnalyzeInformation();
   },
   methods: {

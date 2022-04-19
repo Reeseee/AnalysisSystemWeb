@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <div>
       <div class="sameLine">当前项目为:</div>
       <div class="sameLine">{{ this.id }}</div>
@@ -39,7 +38,10 @@
 <script>
 import G6 from "@antv/g6";
 import axios from "axios";
-import {getProjectDependency} from "@/network/structureanalyze.js"
+import {
+  getProjectDependency,
+  exportProjectDependency
+} from "@/network/structureanalyze.js";
 export default {
   name: "DependencyGraph",
   data() {
@@ -188,17 +190,17 @@ export default {
           size: [300, 40],
           type: "rect",
           style: {
-            fill: "#DEE9FF",
-            stroke: "#5B8FF9"
+            fill: "#e4e387",
+            stroke: "#00000"
           }
         },
         defaultEdge: {
           label: "dep",
           style: {
-            stroke: "#b5b5b5",
-            lineAppendWidth: 10,
+            stroke: "#f96000",
+            lineAppendWidth: 15,
             endArrow: {
-              path: G6.Arrow.triangle(15, 30, 30), // 使用内置箭头路径函数，参数为箭头的 宽度、长度、偏移量（默认为 0，与 d 对应）
+              path: G6.Arrow.triangle(18, 24, 30), // 使用内置箭头路径函数，参数为箭头的 宽度、长度、偏移量（默认为 0，与 d 对应）
               d: 30
             }
           }
@@ -210,22 +212,21 @@ export default {
       });
       console.log(this.gdata);
       this.graph.data(this.gdata); // 读取 Step 2 中的数据源到图上
+
+      let container = document.getElementById("containerG6");
+      let w = container.offsetWidth;
+      let h = container.offsetHeight;
+
+      this.graph.changeSize(w, h);
       this.graph.render(); // 渲染图
     },
     downloadFile() {
-      axios({
-        method: "get",
-        url: "http://127.0.0.1:8001/projectAnalyze/dependency/export/" + this.id,
-        params: {
-          userId: this.userId
-        },
-        responseType: "blob"
-      })
+      exportProjectDependency(this.id, this.userId)
         .then(response => {
           //文件名 文件保存对话框中的默认显示
-          var timestamp = new Date().getTime()
+          var timestamp = new Date().getTime();
           let fileName = timestamp + ".dep";
-          let data = response.data;
+          let data = response;
           if (!data) {
             return;
           }
@@ -247,8 +248,8 @@ export default {
           this.$message.error(response);
         });
     },
-    getDependencyInformation(){
-      getProjectDependency(this.id,this.userId).then(response => {
+    getDependencyInformation() {
+      getProjectDependency(this.id, this.userId).then(response => {
         this.gdata = response;
         console.log(response);
         console.log(this.gdata);
@@ -370,10 +371,17 @@ export default {
 }
 
 .g6-x {
-  width: 2000px;
-  height: 1000px;
+  width: 100wh;
+  height: 50vh;
   box-sizing: border-box;
   border: 1px solid #000;
   margin-left: 10px;
+  background-color: rgba(168, 194, 127, 0.802);
+}
+
+.g6-x >>> .g6-minimap {
+  background-color: rgb(236, 167, 132);
+  background-color: #f96000;
+  float: right;
 }
 </style>

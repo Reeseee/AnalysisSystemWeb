@@ -1,79 +1,77 @@
 <template>
   <div id="building">
-      <div>
-        <div class="sameLine">当前项目为:xxx {{ this.id }}</div>
-        <div class="sameLine">
-          <el-menu
-            mode="horizontal"
-            background-color="#373d41"
-            :default-active="$route.path"
-            @select="handleSelect"
-          >
-            <el-menu-item index="/call">生成项目调用关系</el-menu-item>
-            <el-menu-item index="/dependency">生成项目依赖关系</el-menu-item>
-          </el-menu>
-        </div>
+    <div>
+      <div class="sameLine">当前项目为: {{ this.id }}</div>
+      <div class="sameLine">
+        <el-menu
+          mode="horizontal"
+          background-color="#373d41"
+          :default-active="$route.path"
+          @select="handleSelect"
+        >
+          <el-menu-item index="/call">生成项目调用关系</el-menu-item>
+          <el-menu-item index="/dependency">生成项目依赖关系</el-menu-item>
+        </el-menu>
       </div>
+    </div>
 
-      <el-container style="height: 1000px; border: 1px solid #eee">
-        <el-header style="text-align: center; font-size: 12px">
-          <span>项目分析结果</span>
-        </el-header>
+    <el-container style="height: 1000px; border: 1px solid #eee">
+      <el-header style="text-align: center; font-size: 12px">
+        <span>项目分析结果</span>
+      </el-header>
 
-        <el-container>
-          <el-aside width="300px" style="background-color: rgb(238, 241, 246)">
-            <div class="dirclass">项目目录结构</div>
-            <el-scrollbar class="myscrollbar">
-              <el-tree
-                :data="projectDir"
-                :props="defaultProps"
-                @node-click="handleNodeClick"
-                default-expand-all
-                v-if="isloading"
-              ></el-tree>
-            </el-scrollbar>
-          </el-aside>
+      <el-container>
+        <el-aside width="300px" style="background-color: rgb(238, 241, 246)">
+          <div class="dirclass">项目目录结构</div>
+          <el-scrollbar class="myscrollbar">
+            <el-tree
+              :data="projectDir"
+              :props="defaultProps"
+              @node-click="handleNodeClick"
+              default-expand-all="true"
+              v-if="isloading"
+            ></el-tree>
+          </el-scrollbar>
+        </el-aside>
 
-          <el-main>
-            <div class="fileDetailClass" v-if="isloading">
-              项目行数统计: {{ this.projectAnalyzeVo.linecount }}
-            </div>
-            <div class="fileDetailClass" v-if="isloading">
-              项目文件数统计: {{ this.projectAnalyzeVo.filecount }}
-            </div>
-            <div class="fileDetailClass" v-if="isloading">
-              项目类数统计: {{ this.projectAnalyzeVo.classcount }}
-            </div>
-            <div class="fileDetailClass" v-if="isloading">
-              项目方法数统计: {{ this.projectAnalyzeVo.functioncount }}
-            </div>
-            <div class="fileDetailClass" v-if="isloading">
-              项目中最长的文件: {{ this.projectAnalyzeVo.longestfile }}
-            </div>
-            <div class="fileDetailClass" v-if="isloading">
-              项目中最长的类: {{ this.projectAnalyzeVo.longestclass }}
-            </div>
-            <div class="fileDetailClass" v-if="isloading">
-              项目中最长的方法: {{ this.projectAnalyzeVo.longestfunction }}
-            </div>
-            <div class="fileDetailClass" v-if="isloading">
-              项目中最复杂的文件: {{ this.projectAnalyzeVo.mostComplexFile }}
-            </div>
-            <div class="fileDetailClass" v-if="isloading">
-              项目中复杂度拟合结果:
-              {{ this.projectAnalyzeVo.projectComplexity }}
-            </div>
-          </el-main>
-        </el-container>
+        <el-main>
+          <div class="fileDetailClass" v-if="isloading">
+            项目行数统计: {{ this.projectAnalyzeVo.linecount }}
+          </div>
+          <div class="fileDetailClass" v-if="isloading">
+            项目文件数统计: {{ this.projectAnalyzeVo.filecount }}
+          </div>
+          <div class="fileDetailClass" v-if="isloading">
+            项目类数统计: {{ this.projectAnalyzeVo.classcount }}
+          </div>
+          <div class="fileDetailClass" v-if="isloading">
+            项目方法数统计: {{ this.projectAnalyzeVo.functioncount }}
+          </div>
+          <div class="fileDetailClass" v-if="isloading">
+            项目中最长的文件: {{ this.longestfilevo }}
+          </div>
+          <div class="fileDetailClass" v-if="isloading">
+            项目中最长的类: {{ this.projectAnalyzeVo.longestclass }}
+          </div>
+          <div class="fileDetailClass" v-if="isloading">
+            项目中最长的方法: {{ this.projectAnalyzeVo.longestfunction }}
+          </div>
+          <div class="fileDetailClass" v-if="isloading">
+            项目中最复杂的文件: {{ this.mostComplexFileVo }}
+          </div>
+          <div class="fileDetailClass" v-if="isloading">
+            项目中复杂度拟合结果:
+            {{ this.projectAnalyzeVo.projectComplexity }}
+          </div>
+        </el-main>
       </el-container>
-      <!-- <el-button @click="test">tessssss</el-button> -->
- 
+    </el-container>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import {getProjectAnalyze} from "@/network/structureanalyze.js"
+import { getProjectAnalyze } from "@/network/structureanalyze.js";
 export default {
   name: "ProjectAnalyze",
   data() {
@@ -87,6 +85,10 @@ export default {
       selectedFile: "",
       projectAnalyzeVo: {},
       userId: 1,
+      longestfile: "",
+      longestfilevo: "",
+      mostComplextFile: "",
+      mostComplexFileVo: "",
       isloading: false
     };
   },
@@ -136,16 +138,21 @@ export default {
     //   }
     // },
 
-    getProjectVo(){
-      getProjectAnalyze(this.id,this.userId).then(response => {
+    getProjectVo() {
+      getProjectAnalyze(this.id, this.userId).then(response => {
         this.projectAnalyzeVo = response;
         this.projectDir = this.projectAnalyzeVo.projectdir;
+        var ss = "" + this.id + "\\";
+        this.longestfile = this.projectAnalyzeVo.longestfile;
+        var index = this.longestfile.indexOf(ss);
+        this.longestfilevo = this.longestfile.substring(index);
+        this.mostComplextFile = this.projectAnalyzeVo.mostComplexFile;
+        var index2 = this.mostComplextFile.indexOf(ss);
+        this.mostComplexFileVo = this.mostComplextFile.substring(index2);
         this.isloading = true;
       });
-    },
-
+    }
   }
-
 };
 </script>
 
@@ -234,7 +241,6 @@ export default {
   display: inline-block;
   color: #000;
 }
-
 
 .dirclass {
   font-size: 30px;
