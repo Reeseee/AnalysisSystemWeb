@@ -25,7 +25,7 @@
             <div>
               文件名
             </div>
-            <div>文件所处位置 {{ this.filepath }}</div>
+            <div>文件所处位置 {{ this.filepathvo }}</div>
           </el-aside>
 
           <el-main>
@@ -49,7 +49,7 @@
 
 <script>
 import axios from "axios";
-import {getFileAst} from "@/network/structureanalyze.js"
+import {getFileAst,exportFileAst} from "@/network/structureanalyze.js"
 export default {
   name: "astGraph",
   data() {
@@ -62,13 +62,17 @@ export default {
       id: 0,
       filepath: "",
       userId: 1,
-      isloading: false
+      isloading: false,
+      filepathvo: ""
     };
   },
   mounted() {
     this.id = this.$route.query.id;
     this.userId = this.$store.getters.id;
     this.filepath = this.$route.query.filepath;
+    var ss = "" + this.id + "\\";
+    var index = this.filepath.indexOf(ss);
+    this.filepathvo = this.filepath.substring(index);
     this.getFileAstInformation();
   },
   methods: {
@@ -86,20 +90,12 @@ export default {
       this.$router.push("/" + index);
     },
     downloadFile() {
-      axios({
-        method: "get",
-        url: "http://127.0.0.1:8001/fileAnalyze/ast/export/" + this.id,
-        params: {
-          fileName : this.filepath,
-          userId : this.userId
-        },
-        responseType: "blob",
-      })
+     exportFileAst(this.id,this.filepath,this.userId)
         .then(response => {
           //文件名 文件保存对话框中的默认显示
           var timestamp = new Date().getTime()
           let fileName = timestamp + ".ast";
-          let data = response.data;
+          let data = response;
           if (!data) {
             return;
           }

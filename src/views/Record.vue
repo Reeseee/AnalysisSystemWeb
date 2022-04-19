@@ -97,15 +97,21 @@ export default {
           name: "ProjectAnalyze",
           params: { id: row.projectid }
         });
-      } else if (row.operation == "/dependency" || row.operation == "/call") {
+      } else if (row.operation == "project dependency" || row.operation == "project call") {
         const { href } = this.$router.resolve({
-          path: row.operation,
+          path: row.operateresult,
           query: { id: row.projectid }
         });
         window.open(href, "_blank");
-      } else {
+      } else if (row.operation == "file analyze"){
         const { href } = this.$router.resolve({
-          path: row.operation,
+          path: row.operateresult,
+          query: { id: row.projectid , filepath: row.filename}
+        });
+        window.open(href, "_blank");
+      } else if(row.operation == "file ast"){
+        const { href } = this.$router.resolve({
+          path: row.operateresult,
           query: { id: row.projectid , filepath: row.filename}
         });
         window.open(href, "_blank");
