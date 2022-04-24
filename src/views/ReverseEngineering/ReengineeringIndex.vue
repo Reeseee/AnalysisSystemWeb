@@ -7,9 +7,9 @@
       <!-- <p>项目ID：{{ getProjectInfo.id }}</p> -->
 
       <i class="el-icon-info" style="font-size: 22px;vertical-align:middle"></i>
-      <span style="font-size:18px;vertical-align:middle">当前分析项目名称：{{ getProjectInfo.projectname }}</span>
-    
-
+      <span style="font-size:18px;vertical-align:middle"
+        >当前分析项目名称：{{ getProjectInfo.projectname }}</span
+      >
     </div>
     <!-- 内容 -->
     <div class="content">
@@ -21,7 +21,9 @@
           >基于控制流的数据依赖</el-button
         >
       </el-button-group>
-      <el-tag class="labeltag" size="large" effect="dark" v-if="getLabel!=''">Label:{{getLabel}}</el-tag>
+      <el-tag class="labeltag" size="large" effect="dark" v-if="getLabel != ''"
+        >Label:{{ getLabel }}</el-tag
+      >
       <class-diagram v-if="this.diagram === 1"></class-diagram>
       <control-flow v-if="this.diagram === 2"></control-flow>
       <data-dependence
@@ -61,9 +63,9 @@ export default {
         children: "children",
         label: "nodeShortName"
       },
-      diagram:this.$store.getters.diagram_idx, //从1-4分别代表当前所显示的图像：类图、控制流图、数据依赖、基于控制流的数据依赖
+      diagram: this.$store.getters.diagram_idx, //从1-4分别代表当前所显示的图像：类图、控制流图、数据依赖、基于控制流的数据依赖
       diagram_record: 0, //记录下点击的按钮所选择的diagram
-      fileinfo: {}, //选择的文件
+      fileinfo: {} //选择的文件
       //ctrl: false //是否带控制流
     };
   },
@@ -72,9 +74,9 @@ export default {
     getProjectInfo() {
       return this.$store.getters.project;
     },
-    getLabel(){
+    getLabel() {
       return this.$store.getters.label;
-    },
+    }
     // getDiagram(){
     //   return  this.$store.getters.diagram_idx;
     // }
@@ -92,18 +94,25 @@ export default {
         // } else {
         //   this.ctrl = true;
         // }
+       
         this.diagram = this.diagram_record;
         this.dialogVisible = false;
-        this.$store.commit("SET_LABEL","");
+        this.$store.commit("SET_VSIDX",this.diagram);
+        this.$store.commit("SET_LABEL", "");
       } else this.$message.error("请选择java文件");
     },
     toDiagram(n) {
       getDirectory(this.getProjectInfo.id)
         .then(res => {
           //console.log(res);
-          this.dir = res;
-          this.dialogVisible = true;
-          this.diagram_record = n;
+          if (res.code == 1) {
+            this.dir = res.result;
+            this.dialogVisible = true;
+            this.diagram_record = n;
+          }
+          else{
+            this.$message.error(res.msg);
+          }
         })
         .catch(err => {
           console.log(err);
@@ -123,21 +132,21 @@ export default {
 .content {
   margin-top: 10px;
 }
-.labeltag{
-  float:right;
+.labeltag {
+  float: right;
 }
 .el-tag--dark {
-    background-color: #373d41;
-    border-color: #373d41;
-    color: #fff;
+  background-color: #373d41;
+  border-color: #373d41;
+  color: #fff;
 }
-.el-tag{
-  height:42px;
+.el-tag {
+  height: 42px;
   line-height: 42px;
   font-size: 13px;
   font-weight: 600;
 }
-.el-button{
+.el-button {
   font-weight: 600;
 }
 </style>

@@ -12,7 +12,12 @@
       style="background-color: #f2f2f2;border: solid 2px black; width:100%;height:600px;justify-content: center;margin:0 auto;"
     ></div>
     <div id="myOverviewDiv"></div>
-    <el-button style="float:right" @click="exportJson">结果导出</el-button>
+    <el-button
+      style="float:right"
+      @click="exportJson"
+      v-if="this.nodedata.length != 0"
+      >结果导出</el-button
+    >
   </div>
 </template>
 
@@ -31,7 +36,7 @@ export default {
       linkdata: [],
       loading: true,
       label: "", //图形的标签
-      //type: "" //图形的种类
+      type: "" //图形的种类
     };
   },
   created() {},
@@ -118,135 +123,142 @@ export default {
         //getVSResultControlFlowjson()
         .then(res => {
           //console.log(res);
-          if (res.nodes == undefined) {
-            this.$message.error("该文件中不存在控制流，请重新选择项目或文件");
-            _this.loading = false;
-            return;
-          }
-          _this.nodedata = res.nodes;
-          _this.linkdata = res.edges == undefined ? [] : res.edges;
-          _this.label=res.label;
-          _this.$store.commit("SET_LABEL",res.label);
-          _this.type = res.type;
-          // For details, see https://gojs.net/latest/intro/buildingObjects.html
-          const $ = go.GraphObject.make;
-          // define the Node template
-          _this.myDiagram.nodeTemplate = $(
-            go.Node,
-            "Auto",
-            {
-              locationSpot: go.Spot.Center,
-              isShadowed: true,
-              shadowBlur: 1,
-              shadowOffset: new go.Point(0, 1),
-              shadowColor: "rgba(0, 0, 0, .14)"
-            },
-            // define the node's outer shape, which will surround the TextBlock
-            $(go.Shape, "Ellipse", {
-              name: "SHAPE",
-              fill: "#ffffff",
-              strokeWidth: 0,
-              stroke: null,
-              cursor: "pointer"
-            }),
-            $(
-              go.Panel,
-              "Horizontal",
-              $(
-                go.TextBlock,
-                {
-                  font: "bold 10pt sans-serif",
-                  margin: new go.Margin(5, 5, 5, 5),
-                  stroke: "rgba(0, 0, 0, .87)",
-                  editable: false // editing the text automatically updates the model data
-                },
-                new go.Binding("text", "line", l => {
-                  return l + ":";
-                }),
-                new go.Binding("visible", "line", l => {
-                  return l != 0;
-                })
-              ),
-              $(
-                go.TextBlock,
-                {
-                  font: "bold 10pt sans-serif",
-                  margin: new go.Margin(5, 5, 5, 0),
-                  stroke: "rgba(0, 0, 0, .87)",
-                  editable: false // editing the text automatically updates the model data
-                },
-                new go.Binding("text", "label").makeTwoWay()
-              )
-            )
-          );
-
-          // replace the default Link template in the linkTemplateMap
-          _this.myDiagram.linkTemplate = $(
-            go.Link, // the whole link panel
-            {
-              curve: go.Link.Bezier,
-              adjusting: go.Link.Stretch,
-              toShortLength: 2
-              // corner: 8,
-              // toEndSegmentLength: 20,
-              // toolTip: this.getTooltiptemplate()
-            },
-            new go.Binding("points").makeTwoWay(),
-            new go.Binding("curviness"),
-            $(
-              go.Shape, // the link shape
-              { strokeWidth: 1.5 }
-            ),
-            // //from arrow
-            // $(
-            //   go.Shape,
-            //   { fromArrow: "standard", stroke: null },
-            //   new go.Binding("from", "source")
-            // ),
-            //to arrow
-            $(
-              go.Shape, // the arrowhead
-              { toArrow: "triangle", stroke: null },
-              new go.Binding("to", "target")
-            ),
-            $(
-              go.Panel,
+          if (res.code == 1) {
+            if (res.result.nodes == undefined) {
+              this.$message.error("该文件中不存在控制流，请重新选择项目或文件");
+              _this.loading = false;
+              return;
+            }
+            _this.nodedata = res.result.nodes;
+            _this.linkdata =
+              res.result.edges == undefined ? [] : res.result.edges;
+            _this.label = res.result.label;
+      
+            _this.$store.commit("SET_LABEL", res.result.label);
+            _this.type = res.result.type;
+            // For details, see https://gojs.net/latest/intro/buildingObjects.html
+            const $ = go.GraphObject.make;
+            // define the Node template
+            _this.myDiagram.nodeTemplate = $(
+              go.Node,
               "Auto",
+              {
+                locationSpot: go.Spot.Center,
+                isShadowed: true,
+                shadowBlur: 1,
+                shadowOffset: new go.Point(0, 1),
+                shadowColor: "rgba(0, 0, 0, .14)"
+              },
+              // define the node's outer shape, which will surround the TextBlock
+              $(go.Shape, "Ellipse", {
+                name: "SHAPE",
+                fill: "#ffffff",
+                strokeWidth: 0,
+                stroke: null,
+                cursor: "pointer"
+              }),
               $(
-                go.Shape, // the label background, which becomes transparent around the edges
-                {
-                  fill: $(go.Brush, "Radial"),
-                  stroke: null
-                },
-                new go.Binding("background", "label", function(t) {
-                  return t === "" || t === "EPSILON"
-                    ? "transparent"
-                    : "rgba(245,245,245,0.75)";
-                })
+                go.Panel,
+                "Horizontal",
+                $(
+                  go.TextBlock,
+                  {
+                    font: "bold 10pt sans-serif",
+                    margin: new go.Margin(5, 5, 5, 5),
+                    stroke: "rgba(0, 0, 0, .87)",
+                    editable: false // editing the text automatically updates the model data
+                  },
+                  new go.Binding("text", "line", l => {
+                    return l + ":";
+                  }),
+                  new go.Binding("visible", "line", l => {
+                    return l != 0;
+                  })
+                ),
+                $(
+                  go.TextBlock,
+                  {
+                    font: "bold 10pt sans-serif",
+                    margin: new go.Margin(5, 5, 5, 0),
+                    stroke: "rgba(0, 0, 0, .87)",
+                    editable: false // editing the text automatically updates the model data
+                  },
+                  new go.Binding("text", "label").makeTwoWay()
+                )
+              )
+            );
+
+            // replace the default Link template in the linkTemplateMap
+            _this.myDiagram.linkTemplate = $(
+              go.Link, // the whole link panel
+              {
+                curve: go.Link.Bezier,
+                adjusting: go.Link.Stretch,
+                toShortLength: 2
+                // corner: 8,
+                // toEndSegmentLength: 20,
+                // toolTip: this.getTooltiptemplate()
+              },
+              new go.Binding("points").makeTwoWay(),
+              new go.Binding("curviness"),
+              $(
+                go.Shape, // the link shape
+                { strokeWidth: 1.5 }
+              ),
+              // //from arrow
+              // $(
+              //   go.Shape,
+              //   { fromArrow: "standard", stroke: null },
+              //   new go.Binding("from", "source")
+              // ),
+              //to arrow
+              $(
+                go.Shape, // the arrowhead
+                { toArrow: "triangle", stroke: null },
+                new go.Binding("to", "target")
               ),
               $(
-                go.TextBlock,
-                "", // the label text
-                {
-                  textAlign: "center",
-                  font: "9pt helvetica, arial, sans-serif",
-                  margin: 4,
-                  editable: false // enable in-place editing
-                },
-                // editing the text automatically updates the model data
-                new go.Binding("text", "label", function(l) {
-                  return l === "EPSILON" ? "" : l;
-                })
+                go.Panel,
+                "Auto",
+                $(
+                  go.Shape, // the label background, which becomes transparent around the edges
+                  {
+                    fill: $(go.Brush, "Radial"),
+                    stroke: null
+                  },
+                  new go.Binding("background", "label", function(t) {
+                    return t === "" || t === "EPSILON"
+                      ? "transparent"
+                      : "rgba(245,245,245,0.75)";
+                  })
+                ),
+                $(
+                  go.TextBlock,
+                  "", // the label text
+                  {
+                    textAlign: "center",
+                    font: "9pt helvetica, arial, sans-serif",
+                    margin: 4,
+                    editable: false // enable in-place editing
+                  },
+                  // editing the text automatically updates the model data
+                  new go.Binding("text", "label", function(l) {
+                    return l === "EPSILON" ? "" : l;
+                  })
+                )
               )
-            )
-          );
+            );
 
-          _this.myDiagram.model = new go.GraphLinksModel({
-            nodeDataArray: _this.nodedata,
-            linkDataArray: _this.linkdata
-          });
+            _this.myDiagram.model = new go.GraphLinksModel({
+              nodeDataArray: _this.nodedata,
+              linkDataArray: _this.linkdata
+            });
 
-          _this.loading = false;
+            _this.loading = false;
+          } else {
+            _this.$message.error(res.msg);
+            _this.loading = false;
+          }
         })
         .catch(err => {
           console.log(err);

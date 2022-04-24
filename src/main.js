@@ -4,7 +4,6 @@ import Vue from 'vue'
 import App from './App'
 //导入路由router
 import router from './router'
-import VueRouter from 'vue-router'
 
 //导入vuex仓库store,全局监听变量
 import store from "./store";
@@ -28,7 +27,7 @@ Vue.use(G6);
 import { message } from './lib/resetMessage';
 
 
-Vue.use(VueRouter)
+//Vue.use(router)
 Vue.config.productionTip = false
 
 //VUE使用element-ui
