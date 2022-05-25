@@ -180,6 +180,7 @@ export default {
         this.files.push(files[i]);
         //console.log(this.files[i]);
       }
+      event.target.value='';
     },
     //上传项目
     upload() {

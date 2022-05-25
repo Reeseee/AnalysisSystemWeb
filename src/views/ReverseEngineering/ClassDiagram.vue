@@ -12,7 +12,7 @@
       style="background-color: #f2f2f2;border: solid 2px black; width:100%;height:600px;justify-content: center;margin: 0 auto;"
     ></div>
     <div id="myOverviewDiv"></div>
-
+    <el-button style="float:right" @click="makeSvg">图片导出</el-button>
     <el-button style="float:right" @click="exportJson" v-if="this.nodedata.length!=0">结果导出</el-button>
   </div>
 </template>
@@ -227,7 +227,7 @@ export default {
                     editable: false,
                     text: "<<interface>>"
                   },
-                  new go.Binding("visible", "isInterface")
+                  new go.Binding("visible", "interfaceOrNot")
                 ),
                 $(
                   go.TextBlock,
@@ -400,6 +400,7 @@ export default {
             "myOverviewDiv", // the HTML DIV element for the Overview
             { observed: myDiagram, contentAlignment: go.Spot.Center }
           ); // tell it which Diagram to show and pan
+          _this.diagram=myDiagram;
         }
         else{
           _this.$message.error(res.msg);
@@ -413,6 +414,86 @@ export default {
       });
   },
   methods: {
+     /**
+     * 用于下载png
+     * @param {*pngName} 字符串，表示下载的svg文件的名字
+     *
+     */
+    makeBlob() {
+      let _this = this;
+      var blob = this.diagram.makeImageData({
+        background: "white",
+        returnType: "blob",
+        details: 1,
+        callback: _this.blobCallback
+      });
+    },
+    blobCallback(blob) {
+      let binaryData = [];
+      binaryData.push(blob);
+      var url = window.URL.createObjectURL(new Blob(binaryData));
+
+      //var url = window.URL.createObjectURL(blob);
+      var filename = "BlobFile.jpg";
+      //var filename = pngName + ".png";
+
+      var a = document.createElement("a");
+      a.style = "display: none";
+      a.href = url;
+      a.download = filename;
+
+      // IE 11
+      if (window.navigator.msSaveBlob !== undefined) {
+        window.navigator.msSaveBlob(blob, filename);
+        return;
+      }
+
+      document.body.appendChild(a);
+      requestAnimationFrame(function() {
+        a.click();
+        window.URL.revokeObjectURL(url); //// 释放之前已经存在的、通过调用 URL.createObjectURL() 创建的 URL 对象。当你结束使用某个 URL 对象之后，应该通过调用这个方法来让浏览器知道不用在内存中继续保留对这个文件的引用了。
+        document.body.removeChild(a);
+      });
+    },
+    /**
+     * 用于下载svg
+     * @param {*svgName} 字符串，表示下载的svg文件的名字
+     *
+     */
+    makeSvg(svgName) {
+      var svg = this.diagram.makeSvg({
+        scale: 1,
+        background: "white"
+      });
+      var svgstr = new XMLSerializer().serializeToString(svg);
+      var blob = new Blob([svgstr], {
+        type: "image/svg+xml"
+      });
+      this.svgCallback(blob, svgName);
+    },
+    svgCallback(blob, svgName) {
+      var url = window.URL.createObjectURL(blob);
+      var filename = svgName + ".svg";
+
+      var a = document.createElement("a");
+      a.style = "display: none";
+      a.href = url;
+      a.download = filename;
+
+      // IE 11
+      if (window.navigator.msSaveBlob !== undefined) {
+        window.navigator.msSaveBlob(blob, filename);
+        return;
+      }
+
+      document.body.appendChild(a);
+      requestAnimationFrame(function() {
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      });
+    },
+
     exportJson() {
       exportClassDiagram(this.$store.getters.project.id, this.$store.getters.id)
         .then(res => {
