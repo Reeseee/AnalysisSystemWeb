@@ -70,7 +70,7 @@ export default {
     this.id = this.$route.query.id;
     this.userId = this.$store.getters.id;
     this.filepath = this.$route.query.filepath;
-    var ss = "" + this.id + "\\";
+    var ss = "" + this.id + "/";
     var index = this.filepath.indexOf(ss);
     this.filepathvo = this.filepath.substring(index);
     this.getFileAstInformation();
