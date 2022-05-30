@@ -3,7 +3,9 @@ export function request(config) {
   //创建axios实例
   const instance = axios.create({
     baseURL: "http://127.0.0.1:9001/",
+    //baseURL:'http://47.107.123.197:9001/',
     timeout: 5000
+    //timeout:30000,
     //headers:{ 'Content-Type':'application/x-www-form-urlencoded'},
     //withCredentials: true,
   });

@@ -142,7 +142,7 @@ export default {
       getProjectAnalyze(this.id, this.userId).then(response => {
         this.projectAnalyzeVo = response;
         this.projectDir = this.projectAnalyzeVo.projectdir;
-        var ss = "" + this.id + "\\";
+        var ss = "" + this.id + "/";
         this.longestfile = this.projectAnalyzeVo.longestfile;
         var index = this.longestfile.indexOf(ss);
         this.longestfilevo = this.longestfile.substring(index);

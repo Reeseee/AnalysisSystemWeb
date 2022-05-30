@@ -10,6 +10,15 @@ export function login(loginForm) {
         data: qs.stringify(loginForm), 
     })
 }
+export function register(registerForm) {
+    return request({ 
+        url: '/register',//注册接口
+        params: {
+            username:registerForm.username,
+            password:registerForm.password,
+          },
+    })
+}
 
 // export function modifyPassByPhone(newpass) {
 //     return request({

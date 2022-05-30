@@ -52,12 +52,13 @@
             <div class="fileDetailClass" v-if="isloading">
               文件内的函数信息:
 
-              <div
+              <div class="methodDetailClass"
                 v-for="functionInformation in functionInformations" v-if="isloading"
               >
-                <div>函数名:{{ functionInformation.name }}</div>
-                <div>函数内局部变量：{{ functionInformation.varList }}</div>
-                <div>函数复杂度{{ functionInformation.halsteadMetrics}}</div>
+                <br/>
+                <div class="methodDetailClass">函数名:{{ functionInformation.name }}</div>
+                <div class="methodDetailClass">函数内局部变量：{{ functionInformation.varList }}</div>
+                <div class="methodDetailClass">函数复杂度{{ functionInformation.halsteadMetrics}}</div>
               </div>
             </div>
 
@@ -68,16 +69,16 @@
             </div>
 
             <div class="fileDetailClass" v-if="depIsloading">
-              文件内部依赖: {{ this.dependencyVo.dependency }}
+              文件内部被依赖: {{ this.dependencyVo.dependency }}
             </div>
             <div class="fileDetailClass" v-if="depIsloading">
-              文件内部被依赖: {{ this.dependencyVo.beDependentOn }}
+              文件内部依赖: {{ this.dependencyVo.beDependentOn }}
             </div>
             <div class="fileDetailClass" v-if="callIsloading">
-              文件内部调用: {{ this.callRelationVo.dependency }}
+              文件内部被调用: {{ this.callRelationVo.dependency }}
             </div>
             <div class="fileDetailClass" v-if="callIsloading">
-              文件内部被调用: {{ this.callRelationVo.beDependentOn }}
+              文件内部调用: {{ this.callRelationVo.beDependentOn }}
             </div>
           </el-main>
         </el-container>
@@ -110,7 +111,7 @@ export default {
     this.id = this.$route.query.id;
     this.filepath = this.$route.query.filepath;
     this.userId = this.$store.getters.id;
-    var ss = "" + this.id + "\\";
+    var ss = "" + this.id + "/";
     var index = this.filepath.indexOf(ss);
     this.filepathvo = this.filepath.substring(index);
     this.getFileAnalyzeInformation();
@@ -248,6 +249,11 @@ export default {
 
 .fileDetailClass {
   font-size: 20px;
+  color: #000000;
+}
+
+.methodDetailClass {
+  font-size: 16px;
   color: #000000;
 }
 

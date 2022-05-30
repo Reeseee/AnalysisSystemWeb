@@ -1,45 +1,44 @@
 <template>
-  <div>
-    <el-card class="box-card">
+   <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>登陆</span>
+        <span>注册</span>
       </div>
       <el-form
         label-width="60px"
-        :model="loginForm"
-        :rules="loginRules"
-        ref="loginForm"
+        :model="registerForm"
+        :rules="registerRules"
+        ref="registerForm"
       >
         <el-form-item label="账号" prop="username">
-          <el-input v-model="loginForm.username"></el-input>
+          <el-input v-model="registerForm.username"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="loginForm.password" show-password></el-input>
+          <el-input v-model="registerForm.password" show-password></el-input>
         </el-form-item>
         <el-form-item style="float:right">
-          <el-button @click="toRegister">注册</el-button>
-          <el-button type="primary" @click="submitForm('loginForm')"
-            >登陆</el-button
+            <el-button @click="toLogin"
+            >返回登陆</el-button
+          >
+          <el-button type="primary" @click="submitForm('registerForm')"
+            >注册</el-button
           >
         </el-form-item>
       </el-form>
     </el-card>
-  </div>
 </template>
 
 <script>
-import { login } from "@/network/login";
-import axios from "axios";
+import { register } from "@/network/login";
 export default {
   name: "Login", //组件名称
   data() {
     //组件中所用的数据
     return {
-      loginForm: {
+      registerForm: {
         username: "",
         password: ""
       },
-      loginRules: {
+      registerRules: {
         username: [
           {
             required: true,
@@ -52,9 +51,8 @@ export default {
     };
   },
   mounted() {
-    //绑定事件
     window.addEventListener("keydown", this.keyDown);
-  }, //组件刚挂载的一系列操作
+  },
   destroyed() {
     window.removeEventListener("keydown", this.keyDown, false);
   },
@@ -63,29 +61,24 @@ export default {
     keyDown(e) {
       //如果是回车则执行登录方法
       if (e.keyCode == 13) {
-        this.submitForm("loginForm");
+        this.submitForm("registerForm");
       }
     },
     submitForm(formname) {
       this.$refs[formname].validate(valid => {
         if (valid) {
-          login(this.loginForm)
+          register(this.registerForm)
             .then(res => {
-              console.log(res);
-              if (res.code == 1000) {
-                this.$message.success("登陆成功");
-                this.$store.commit("SET_ISLOGIN", true);
-                this.$store.commit("SET_TOKEN", res.msg); //设置token
-                this.$store.commit("SET_ID", res.result.id);
-                this.$store.commit("SET_USERNAME", res.result.username);
-                this.$router.push("/projects");
+              if (res == 1) {
+                this.$message.success("注册成功");
+                this.$router.push("/login");
               }
               else{
-                this.$message.error(res.msg);
+                this.$message.error("注册失败，用户名已存在!");
               }
             })
             .catch(err => {
-              this.$message.error("登陆失败");
+              this.$message.error("注册失败");
             });
         } else {
           console.log("error submit!!");
@@ -93,15 +86,16 @@ export default {
         }
       });
     },
-    toRegister(){
-      this.$router.push('/register');
+    toLogin(){
+      this.$router.push('/login');
+
     }
-  }, //组件中所使用方法，如向后端请求数据
-  components: {} //在此注册此组件中要使用的其他组件（.vue）
+  }, 
+  components: {} 
 };
 </script>
 
-<style scoped>
+<style>
 .box-card {
   width: 35%;
   margin: 100px auto;

@@ -10,6 +10,8 @@ const HelloWorld = () => import("@/components/HelloWorld");
 const Login = () => import("@/views/Login");
 const Project = () => import("@/views/Project");
 const Record = () => import("@/views/Record");
+const Register = () => import("@/views/Register");
+
 //const BasicAnalyze = () => import("@/views/StructureAnalyze/BasicAnalyze");
 
 const ReengineeringIndex = () =>
@@ -38,6 +40,11 @@ const routes = [
     path: "/login",
     name: "Login",
     component: Login
+  },
+  {
+    path: "/register",
+    name: "Register",
+    component: Register
   },
   {
     path: "/projects",
