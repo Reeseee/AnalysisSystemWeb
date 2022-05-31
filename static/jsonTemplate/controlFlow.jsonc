@@ -62,61 +62,61 @@
     {
       "from": 0, //控制流的source程序块的键值:int
       "to": 1, //控制流的target程序块的键值:int
-      "label": "EPSILON", //控制流的标签/类型:String (enum,"EPSILON":普通顺序控制流 "TRUE":条件判断正确 "FALSE"：条件判断错误 "THROWS":抛出 "CALLS":调用 "RETURN":返回)
+      "label": "", //控制流的标签/类型:String (enum,"":普通顺序控制流 "True":条件判断正确 "False"：条件判断错误 "Throws":抛出 "Calls":调用 "Return":返回)
       "key": 0 //标识该控制流的唯一键值:int
     },
     {
       "from": 1,
       "to": 2,
-      "label": "EPSILON",
+      "label": "",
       "key": 1
     },
     {
       "from": 2,
       "to": 3,
-      "label": "EPSILON",
+      "label": "",
       "key": 2
     },
     {
       "from": 3,
       "to": 4,
-      "label": "TRUE",
+      "label": "True",
       "key": 3
     },
     {
       "from": 4,
       "to": 5,
-      "label": "EPSILON",
+      "label": "",
       "key": 4
     },
     {
       "from": 5,
       "to": 6,
-      "label": "EPSILON",
+      "label": "",
       "key": 5
     },
     {
       "from": 3,
       "to": 7,
-      "label": "FALSE",
+      "label": "False",
       "key": 6
     },
     {
       "from": 7,
       "to": 8,
-      "label": "EPSILON",
+      "label": "",
       "key": 7
     },
     {
       "from": 8,
       "to": 6,
-      "label": "EPSILON",
+      "label": "",
       "key": 8
     },
     {
       "from": 6,
       "to": 9,
-      "label": "EPSILON",
+      "label": "",
       "key": 9
     }
   ],

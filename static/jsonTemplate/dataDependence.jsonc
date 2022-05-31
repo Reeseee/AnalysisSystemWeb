@@ -93,28 +93,28 @@
             "from": 1, //定义该数据依赖中变量的程序块的键值:int
             "to": 2, //使用该数据依赖中变量的程序块的键值:int
             "label": "i", //该数据依赖依赖中传递的变量:String
-            "type": "FLOW", //有向边的种类:String (由于该图为省去了控制流，所以type均为"FLOW"，即只显示数据依赖关系)
+            "type": "Flows", //有向边的种类:String (由于该图为省去了控制流，所以type均为"Flows"，即只显示数据依赖关系)
             "key": 10 //标识该数据依赖关系的唯一键值:int
           }, //数据依赖关系
         {
             "from": 2,
             "to": 3,
             "label": "i",
-            "type": "FLOW",
+            "type": "Flows",
             "key": 11
         },
         {
             "from": 2,
             "to": 8,
             "label": "i",
-            "type": "FLOW",
+            "type": "Flows",
             "key": 12
         },
         {
             "from": 2,
             "to": 5,
             "label": "i",
-            "type": "FLOW",
+            "type": "Flows",
             "key": 13
         }
     ],

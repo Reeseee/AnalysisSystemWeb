@@ -124,7 +124,7 @@ export default {
         .then(res => {
           //console.log(res);
           if (res.code == 1) {
-            if (res.result.nodes == undefined) {
+            if (res.result.nodes == undefined||res.result.nodes.length==0) {
               this.$message.error("该文件中不存在控制流，请重新选择项目或文件");
               _this.loading = false;
               return;

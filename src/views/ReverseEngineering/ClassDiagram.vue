@@ -12,7 +12,7 @@
       style="background-color: #f2f2f2;border: solid 2px black; width:100%;height:600px;justify-content: center;margin: 0 auto;"
     ></div>
     <div id="myOverviewDiv"></div>
-    <el-button style="float:right" @click="makeSvg">图片导出</el-button>
+    <!-- <el-button style="float:right" @click="makeSvg">图片导出</el-button> -->
     <el-button style="float:right" @click="exportJson" v-if="this.nodedata.length!=0">结果导出</el-button>
   </div>
 </template>

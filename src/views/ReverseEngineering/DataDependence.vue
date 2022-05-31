@@ -133,7 +133,7 @@ export default {
       )
         .then(res => {
           if (res.code == 1) {
-            if (res.result.nodes == undefined) {
+            if (res.result.nodes == undefined|| res.result.nodes.length == 0) {
               this.$message.error(
                 "该文件中不存在数据依赖,请重新选择项目或文件"
               );

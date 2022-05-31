@@ -25,7 +25,7 @@
             ],
 
             "className": "ConcreteDecoratorA",//类名:String
-            "isInterface": false,//该类是否为接口:Boolean (true:该类为接口 false:该类为普通类)
+            "interfaceOrNot": false,//该类是否为接口:Boolean (true:该类为接口 false:该类为普通类)
             "key": 1,//标识该类的唯一键值:int
             //该类的属性列表:Array
             "properties": [
@@ -39,7 +39,7 @@
         {
             "methods": [],
             "className": "Decorator",
-            "isInterface": false,
+            "interfaceOrNot": false,
             "key": 2,
             "properties": []
         },
@@ -53,7 +53,7 @@
                 }
             ],
             "className": "Component",
-            "isInterface": true,
+            "interfaceOrNot": true,
             "key": 3,
             "properties": []
         },
@@ -67,7 +67,7 @@
                 }
             ],
             "className": "ConcreteComponent",
-            "isInterface": false,
+            "interfaceOrNot": false,
             "key": 4,
             "properties": []
         }
